@@ -1,0 +1,5 @@
+# MacOS X temp files
+.DS_Store
+
+# WebStorm project
+.idea
