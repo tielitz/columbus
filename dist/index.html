@@ -18,18 +18,25 @@
 </md-toolbar>
 
 <md-content class="md-padding">
-    <div layout="row" layout-fill>
+    <div layout="row">
         <md-card flex>
-            <h2>JavaScript Code</h2>
+            <md-card-title flex="none">
+              <md-card-title-text>
+                <span class="md-headline">JavaScript Code</span>
+              </md-card-title-text>
+            </md-card-title>
             <md-card-content>
                 <editor type='javascript' content="jsContent"></editor>
             </md-card-content>
         </md-card>
         <md-card flex >
-            <h2>Model</h2>
+            <md-card-title flex="none">
+              <md-card-title-text>
+                <span class="md-headline">Model</span>
+              </md-card-title-text>
+            </md-card-title>
             <md-card-content>
-
-                <md-tabs layout="column" layout-fill>
+                <md-tabs layout="column" md-dynamic-height>
                     <md-tab id="syntax">
                         <md-tab-label>Syntax</md-tab-label>
 
@@ -44,7 +51,6 @@
                         </md-tab-body>
                     </md-tab>
                 </md-tabs>
-
             </md-card-content>
         </md-card>
     </div>
