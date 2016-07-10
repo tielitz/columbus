@@ -50,7 +50,8 @@ class JsxParser {
 class ModelExtractorChain {
     constructor() {
         this.extractors = [
-            new ComponentNameExtractor()
+            new ComponentNameExtractor(),
+            new ComponentProptypesExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -113,5 +114,21 @@ class ComponentNameExtractor extends AbstractExtractor {
                     && e.init.callee.property.name === 'createClass'
             })
             .map(a => a.id.name);
+    }
+}
+
+class ComponentProptypesExtractor extends AbstractExtractor {
+    extract(input) {
+        let propTypes = input.queryAst(
+            '[body] > [type="VariableDeclaration"] > [type="VariableDeclarator"] [key.name="propTypes"]~[value] > [properties]> [type]'
+        );
+
+        return propTypes.getContents()
+            .map(a => {
+                return {
+                    name: a.key.name,
+                    type: a.value.property.name
+                };
+            });
     }
 }
