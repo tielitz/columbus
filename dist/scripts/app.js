@@ -7,17 +7,11 @@ angular.module('columbusApp', ['ngMaterial'])
             throw new Error('This Application depends on Esprima library - http://esprima.org/');
         }
 
-        $scope.jsContent = "";
+        $scope.jsContent = '';
 
         $scope.syntaxContent = '';
         $scope.tokensContent = '';
         $scope.modelContent  = '';
-
-        //Watch 'content' and update content whenever it changes
-        /*$scope.$watch('jsContent', function(newValue, oldValue){
-            $scope.syntaxContent =  JSON.stringify($window.esprima.parse(newValue), null, '\t');
-            $scope.tokensContent =  JSON.stringify($window.esprima.tokenize(newValue), null, '\t');
-        }, true);*/
 
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
@@ -49,6 +43,7 @@ angular.module('columbusApp', ['ngMaterial'])
             restrict: 'E',
             scope: {
                 type: '@',
+                readonly: '@',
                 content: '='
             },
             link: function (scope, elem, attrs) {
@@ -78,6 +73,11 @@ angular.module('columbusApp', ['ngMaterial'])
                 editor.setAutoScrollEditorIntoView(true);
                 editor.setOption("minLines", 5);
                 editor.setOption("maxLines", 50);
+
+                if (scope.readonly !== undefined) {
+                    editor.setReadOnly(true);
+                }
+
                 // disables syntax checker
                 editor.getSession().setUseWorker(false);
 
