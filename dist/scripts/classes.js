@@ -73,7 +73,8 @@ class ModelExtractorChain {
     constructor() {
         this.extractors = [
             new ComponentNameExtractor(),
-            new ComponentProptypesExtractor()
+            new ComponentProptypesExtractor(),
+            new ComponentFunctionsExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -119,7 +120,7 @@ class AbstractExtractor {
     }
 }
 
-class AbtractComponentBasedExtractor extends AbstractExtractor {
+class AbstractComponentBasedExtractor extends AbstractExtractor {
     extract(input) {
         let components = input.getComponents();
         let output = {};
@@ -143,7 +144,7 @@ class ComponentNameExtractor extends AbstractExtractor {
     }
 }
 
-class ComponentProptypesExtractor extends AbtractComponentBasedExtractor {
+class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let propTypes = component.queryAst(
             '[key.name="propTypes"]~[value] > [properties] > [type]'
@@ -156,5 +157,15 @@ class ComponentProptypesExtractor extends AbtractComponentBasedExtractor {
                     type: a.getContents().value.property.name
                 };
             });
+    }
+}
+
+class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let funcs = component.queryAst(
+            '[arguments] > [properties] > [value.type="FunctionExpression"]'
+        );
+
+        return funcs.map(a => a.getContents().value.id.name);
     }
 }
