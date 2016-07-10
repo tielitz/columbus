@@ -1,54 +1,5 @@
 'use strict';
 
-class AstContainer {
-    constructor(ast, tokens) {
-        this.originalAst = ast;
-        this.modifiedAst = ast;
-    }
-
-    asJson() {
-        return JSON.stringify(this.modifiedAst, null, '\t');
-    }
-
-    filter() {
-        // TODO: filter unnecessary elements
-    }
-
-    static fromSourceCode(esprima, code) {
-        // FIXME: dont want to pass esprima to this method, but dont have access to $window
-        var ast = esprima.parse(code)
-        return new AstContainer(ast);
-    }
-}
-
-class BabelParser {
-    static babelify(code) {
-        var transformed = Babel.transform(code, {
-            presets: ['es2015', 'react']
-        });
-        return transformed.code;
-    }
-}
-
-class ESQueryUtil {
-    constructor(ast) {
-        this.sourceAst = ast;
-    }
-    extractComponents() {
-        // TODO
-    }
-    countVariablesPerComponent() {
-        // TODO
-    }
-    countFunctionsPerComponent() {
-        // TODO
-    }
-    execute(query) {
-        var selectorAst = esquery.parse(query);
-        return esquery.match(this.sourceAst, selectorAst);
-    }
-}
-
 angular.module('columbusApp', ['ngMaterial'])
     .controller('AppCtrl', function($scope,$window) {
 
@@ -56,13 +7,11 @@ angular.module('columbusApp', ['ngMaterial'])
             throw new Error('This Application depends on Esprima library - http://esprima.org/');
         }
 
-        $scope.jsContent = 'var dummy = 5;';
+        $scope.jsContent = "";
 
         $scope.syntaxContent = '';
         $scope.tokensContent = '';
-
-        var ast = new AstContainer('{fpp:"asd"}');
-        console.log(ast.asJson());
+        $scope.modelContent  = '';
 
         //Watch 'content' and update content whenever it changes
         /*$scope.$watch('jsContent', function(newValue, oldValue){
@@ -73,10 +22,19 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
 
-            var parsedCode = BabelParser.babelify($scope.jsContent);
-            var astContainer = AstContainer.fromSourceCode($window.esprima, parsedCode);
+            var jsxParser = new JsxParser();
+            var astParser = new AstParser($window.esprima);
 
-            $scope.syntaxContent = astContainer.asJson();
+            var parsedJsxCode = jsxParser.transform($scope.jsContent);
+            var ast = astParser.parse(parsedJsxCode);
+
+            $scope.syntaxContent = ast.asJson();
+            $scope.tokensContent = ast.tokensAsJson();
+
+            var modelExtractorChain = new ModelExtractorChain();
+            var extractedModel = modelExtractorChain.apply(ast);
+
+            $scope.modelContent = JSON.stringify(extractedModel, null, '\t');
         }
 
 
