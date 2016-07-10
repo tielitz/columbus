@@ -119,6 +119,23 @@ class AbstractExtractor {
     }
 }
 
+class AbtractComponentBasedExtractor extends AbstractExtractor {
+    extract(input) {
+        let components = input.getComponents();
+        let output = {};
+
+        for (let component of components) {
+            output[component.getContents().id.name] = this.extractFromComponent(component);
+        }
+
+        return output;
+    }
+
+    extractFromComponent(component) {
+        return undefined;
+    }
+}
+
 class ComponentNameExtractor extends AbstractExtractor {
     extract(input) {
         let components = input.getComponents();
@@ -126,28 +143,18 @@ class ComponentNameExtractor extends AbstractExtractor {
     }
 }
 
-class ComponentProptypesExtractor extends AbstractExtractor {
-    extract(input) {
+class ComponentProptypesExtractor extends AbtractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let propTypes = component.queryAst(
+            '[key.name="propTypes"]~[value] > [properties] > [type]'
+        );
 
-        let components = input.getComponents();
-        let output = {};
-
-        for (let component of components) {
-            let propTypes = component.queryAst(
-                '[key.name="propTypes"]~[value] > [properties] > [type]'
-            );
-
-            output[component.getContents().id.name] = propTypes
-                .map(a => {
-                    return {
-                        name: a.getContents().key.name,
-                        type: a.getContents().value.property.name
-                    };
-                });
-        }
-
-        // TODO: read default value from getDefaultProps
-
-        return output;
+        return propTypes
+            .map(a => {
+                return {
+                    name: a.getContents().key.name,
+                    type: a.getContents().value.property.name
+                };
+            });
     }
 }
