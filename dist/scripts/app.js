@@ -78,16 +78,23 @@ angular.module('columbusApp', ['ngMaterial'])
                 editor.setAutoScrollEditorIntoView(true);
                 editor.setOption("minLines", 5);
                 editor.setOption("maxLines", 50);
+                // disables syntax checker
+                editor.getSession().setUseWorker(false);
 
                 //Watch 'content' and update content whenever it changes
-                scope.$watch('content', function(newValue, oldValue){
-                    editor.setValue(newValue);
-                    editor.clearSelection();
+                scope.$watch('content', function(newValue, oldValue) {
+                    // only update the contents if it is different
+                    // fixes the bug that the curser jumpes at the
+                    // end of the editor after each key stroke
+                    if (editor.getValue() !== newValue) {
+                        editor.setValue(newValue);
+                        editor.clearSelection();
+                    }
                 }, true);
 
 
                 editor.on("change", function(e) {
-                    $timeout(function(){
+                    $timeout(function() {
                         scope.content = editor.getValue();
                     });
 
