@@ -15,7 +15,7 @@ class Ast {
     }
 
     queryAst(query) {
-        var selectorAst = esquery.parse(query);
+        let selectorAst = esquery.parse(query);
         return esquery.match(this.ast, selectorAst);
     }
 }
@@ -25,8 +25,8 @@ class AstParser {
         this.parser = parser;
     }
     parse(code) {
-        var ast = this.parser.parse(code);
-        var tokens = this.parser.tokenize(code);
+        let ast = this.parser.parse(code);
+        let tokens = this.parser.tokenize(code);
 
         return new Ast(ast, tokens);
     }
@@ -34,7 +34,7 @@ class AstParser {
 
 class JsxParser {
     transform(code) {
-        var transformed = Babel.transform(code, {
+        let transformed = Babel.transform(code, {
             presets: ['es2015', 'react']
         });
         return transformed.code;
@@ -54,11 +54,15 @@ class ModelExtractorChain {
      * @return {[object]}
      */
     apply(input) {
-        var output = {};
+        let output = {};
 
-        for (var i = 0; i < this.extractors.length; i++) {
-            var extractorDesc = this.extractors[i].descriptor();
-            var extractorOut = this.extractors[i].extract(input);
+        // for (var i = 0; i < this.extractors.length; i++) {
+        // var extractorDesc = this.extractors[i].descriptor();
+        // var extractorOut = this.extractors[i].extract(input);
+
+        for (let extractor of this.extractors) {
+            let extractorDesc = extractor.descriptor();
+            let extractorOut = extractor.extract(input);
 
             output[extractorDesc] = extractorOut;
         }
@@ -84,18 +88,26 @@ class AbstractExtractor {
     extract(input) {
         return undefined;
     }
+
+    printDebug(val) {
+        console.log(JSON.stringify(val, null, '\t'));
+    }
 }
 
 class ComponentNameExtractor extends AbstractExtractor {
     extract(input) {
-        var components = input.queryAst(
-            '[type="Program"] [type="VariableDeclaration"]'
+        let components = input.queryAst(
+            '[body] > [type="VariableDeclaration"] > [type="VariableDeclarator"]'
         );
 
-        // TODO: check that it has React.createClass as value assigned
+        this.printDebug(components);
 
-        return components.map(function (a) {
-            return a.declarations[0].id.name;
-        });
+        return components
+            .filter(function (e) {
+                return e.init.type === 'CallExpression'
+                    && e.init.callee.object.name === 'React'
+                    && e.init.callee.property.name === 'createClass'
+            })
+            .map(a => a.id.name);
     }
 }

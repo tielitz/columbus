@@ -22,17 +22,17 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
 
-            var jsxParser = new JsxParser();
-            var astParser = new AstParser($window.esprima);
+            let jsxParser = new JsxParser();
+            let astParser = new AstParser($window.esprima);
 
-            var parsedJsxCode = jsxParser.transform($scope.jsContent);
-            var ast = astParser.parse(parsedJsxCode);
+            let parsedJsxCode = jsxParser.transform($scope.jsContent);
+            let ast = astParser.parse(parsedJsxCode);
 
             $scope.syntaxContent = ast.asJson();
             $scope.tokensContent = ast.tokensAsJson();
 
-            var modelExtractorChain = new ModelExtractorChain();
-            var extractedModel = modelExtractorChain.apply(ast);
+            let modelExtractorChain = new ModelExtractorChain();
+            let extractedModel = modelExtractorChain.apply(ast);
 
             $scope.modelContent = JSON.stringify(extractedModel, null, '\t');
         }
