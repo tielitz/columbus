@@ -1,22 +1,21 @@
 'use strict';
 
 class Ast {
-    constructor(ast, tokens) {
-        this.ast = ast;
-        this.tokens = tokens;
+    constructor(value) {
+        this.value = value;
+    }
+
+    getContents() {
+        return this.value;
     }
 
     asJson() {
-        return JSON.stringify(this.ast, null, '\t');
-    }
-
-    tokensAsJson() {
-        return JSON.stringify(this.tokens, null, '\t');
+        return JSON.stringify(this.value, null, '\t');
     }
 
     queryAst(query) {
         let selectorAst = esquery.parse(query);
-        return esquery.match(this.ast, selectorAst);
+        return new Ast(esquery.match(this.value, selectorAst));
     }
 }
 
@@ -26,9 +25,16 @@ class AstParser {
     }
     parse(code) {
         let ast = this.parser.parse(code);
-        let tokens = this.parser.tokenize(code);
+        return new Ast(ast);
+    }
+}
 
-        return new Ast(ast, tokens);
+class TokenParser {
+    constructor(parser) {
+        this.parser = parser;
+    }
+    parse(code) {
+        return this.parser.tokenize(code);
     }
 }
 
@@ -100,9 +106,7 @@ class ComponentNameExtractor extends AbstractExtractor {
             '[body] > [type="VariableDeclaration"] > [type="VariableDeclarator"]'
         );
 
-        this.printDebug(components);
-
-        return components
+        return components.getContents()
             .filter(function (e) {
                 return e.init.type === 'CallExpression'
                     && e.init.callee.object.name === 'React'

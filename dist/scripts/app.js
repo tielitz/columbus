@@ -23,7 +23,7 @@ angular.module('columbusApp', ['ngMaterial'])
             let ast = astParser.parse(parsedJsxCode);
 
             $scope.syntaxContent = ast.asJson();
-            $scope.tokensContent = ast.tokensAsJson();
+            $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedJsxCode), null, '\t');
 
             let modelExtractorChain = new ModelExtractorChain();
             let extractedModel = modelExtractorChain.apply(ast);
