@@ -13,9 +13,27 @@ class Ast {
         return JSON.stringify(this.value, null, '\t');
     }
 
+    /**
+     * @param  {string} query
+     * @return {Ast[]}
+     */
     queryAst(query) {
+        console.log('[QueryAST] ', query);
         let selectorAst = esquery.parse(query);
-        return new Ast(esquery.match(this.value, selectorAst));
+        let matches = esquery.match(this.value, selectorAst);
+        return matches.map(a => new Ast(a));
+    }
+}
+
+class ReactAst extends Ast {
+    getComponents() {
+        let components = this.queryAst(
+            '[body] > [type="VariableDeclaration"] > [init.type="CallExpression"]'
+        );
+        return components.filter(a => {
+            return a.getContents().init.callee.object.name === 'React'
+                    && a.getContents().init.callee.property.name === 'createClass'
+        });
     }
 }
 
@@ -26,6 +44,10 @@ class AstParser {
     parse(code) {
         let ast = this.parser.parse(code);
         return new Ast(ast);
+    }
+    parseReact(code) {
+        let ast = this.parser.parse(code);
+        return new ReactAst(ast);
     }
 }
 
@@ -63,10 +85,6 @@ class ModelExtractorChain {
     apply(input) {
         let output = {};
 
-        // for (var i = 0; i < this.extractors.length; i++) {
-        // var extractorDesc = this.extractors[i].descriptor();
-        // var extractorOut = this.extractors[i].extract(input);
-
         for (let extractor of this.extractors) {
             let extractorDesc = extractor.descriptor();
             let extractorOut = extractor.extract(input);
@@ -103,17 +121,8 @@ class AbstractExtractor {
 
 class ComponentNameExtractor extends AbstractExtractor {
     extract(input) {
-        let components = input.queryAst(
-            '[body] > [type="VariableDeclaration"] > [type="VariableDeclarator"]'
-        );
-
-        return components.getContents()
-            .filter(function (e) {
-                return e.init.type === 'CallExpression'
-                    && e.init.callee.object.name === 'React'
-                    && e.init.callee.property.name === 'createClass'
-            })
-            .map(a => a.id.name);
+        let components = input.getComponents();
+        return components.map(a => a.getContents().id.name);
     }
 }
 
@@ -123,11 +132,11 @@ class ComponentProptypesExtractor extends AbstractExtractor {
             '[body] > [type="VariableDeclaration"] > [type="VariableDeclarator"] [key.name="propTypes"]~[value] > [properties]> [type]'
         );
 
-        return propTypes.getContents()
+        return propTypes
             .map(a => {
                 return {
-                    name: a.key.name,
-                    type: a.value.property.name
+                    name: a.getContents().key.name,
+                    type: a.getContents().value.property.name
                 };
             });
     }

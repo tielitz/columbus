@@ -20,7 +20,7 @@ angular.module('columbusApp', ['ngMaterial'])
             let astParser = new AstParser($window.esprima);
 
             let parsedJsxCode = jsxParser.transform($scope.jsContent);
-            let ast = astParser.parse(parsedJsxCode);
+            let ast = astParser.parseReact(parsedJsxCode);
 
             $scope.syntaxContent = ast.asJson();
             $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedJsxCode), null, '\t');
