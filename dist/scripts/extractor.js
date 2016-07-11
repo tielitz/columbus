@@ -5,7 +5,8 @@ class ModelExtractorChain {
         this.extractors = [
             new ComponentNameExtractor(),
             new ComponentProptypesExtractor(),
-            new ComponentFunctionsExtractor()
+            new ComponentFunctionsExtractor(),
+            new ComponentDependencyExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -28,6 +29,9 @@ class ModelExtractorChain {
     }
 }
 
+// ########################################################################
+// ########################################################################
+
 class AbstractExtractor {
 
     /**
@@ -47,12 +51,13 @@ class AbstractExtractor {
     }
 
     printDebug(val) {
-        console.log(JSON.stringify(val, null, '\t'));
+        if (val instanceof Array) {
+            val.forEach(a => console.log(JSON.stringify(a, null, '\t')));
+        } else {
+            console.log(JSON.stringify(val, null, '\t'));
+        }
     }
 }
-
-// ########################################################################
-// ########################################################################
 
 class AbstractComponentBasedExtractor extends AbstractExtractor {
     extract(input) {
@@ -70,6 +75,9 @@ class AbstractComponentBasedExtractor extends AbstractExtractor {
         return undefined;
     }
 }
+
+// ########################################################################
+// ########################################################################
 
 class ComponentNameExtractor extends AbstractExtractor {
     extract(input) {
@@ -101,5 +109,30 @@ class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
         );
 
         return funcs.map(a => a.getContents().value.id.name);
+    }
+}
+
+class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let reactCreateElementTags = component.queryAst(
+            '[value.id.name="render"] [type="ReturnStatement"] > [arguments] > [callee.property.name="createElement"]'
+        );
+
+        this.printDebug(reactCreateElementTags);
+
+        /*
+         * Filter elements that call React.createElement with exactly two parameters
+         * Either it's an object literal {...} or null
+         */
+        return reactCreateElementTags.filter(a => {
+            console.log(a.getContents().arguments.length === 2);
+            return a.getContents().arguments.length === 2
+                && a.getContents().arguments[0].type === 'Identifier'
+                && (
+                    a.getContents().arguments[1].type === 'ObjectExpression'
+                    || a.getContents().arguments[1].type === 'Literal'
+                );
+            })
+            .map(a => a.getContents().arguments[0].name);
     }
 }
