@@ -108,7 +108,12 @@ class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
             '[arguments] > [properties] > [value.type="FunctionExpression"]'
         );
 
-        return funcs.map(a => a.getContents().value.id.name);
+        return funcs.map(a => {
+            return {
+                name: a.getContents().value.id.name,
+                params: a.getContents().value.params.map(e => e.name)
+            }
+        });
     }
 }
 
