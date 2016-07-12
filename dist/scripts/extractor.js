@@ -6,7 +6,8 @@ class ModelExtractorChain {
             new ComponentNameExtractor(),
             new ComponentProptypesExtractor(),
             new ComponentFunctionsExtractor(),
-            new ComponentDependencyExtractor()
+            new ComponentDependencyExtractor(),
+            new ComponentRenderPropsExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -139,5 +140,15 @@ class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
                 );
             })
             .map(a => a.getContents().arguments[0].name);
+    }
+}
+
+class ComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let props = component.queryAst(
+            '[key.name="render"] [type="MemberExpression"][object.property.name="props"]'
+        );
+
+        return props.map(a => a.getContents().property.name);
     }
 }
