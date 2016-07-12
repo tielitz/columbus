@@ -4,6 +4,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Angular Material style sheet -->
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.css">
+
+    <style>
+        .node {
+          stroke: #fff;
+          stroke-width: 1.5px;
+            cursor: move;
+        }
+
+        .link {
+          stroke: #999;
+          stroke-width: 3px;
+          stroke-opacity: 1;
+          marker-end: url(#end-arrow);
+        }
+
+        .label {
+            fill: white;
+            font-family: Verdana;
+            font-size: 25px;
+            text-anchor: middle;
+            cursor: move;
+        }
+    </style>
 </head>
 
 
@@ -59,6 +82,12 @@
                             <editor type='json' content="modelContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
+                    <md-tab id="model">
+                        <md-tab-label>Dependencies</md-tab-label>
+                        <md-tab-body>
+                            <dependency-graph content="modelContent" width=660 height=700></dependency-graph>
+                        </md-tab-body>
+                    </md-tab>
                 </md-tabs>
             </md-card-content>
         </md-card>
@@ -82,6 +111,9 @@
 <script src="//npmcdn.com/babel-standalone@6/babel.min.js"></script>
 <script src="//estools.github.io/esquery/esquery.min.js"></script>
 
+<!-- graph libraries -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.js"></script>
+<script src="//marvl.infotech.monash.edu/webcola/cola.v3.min.js"></script>
 
 <!-- Your application bootstrap  -->
 <script src="scripts/ast.js"></script>

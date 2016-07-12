@@ -124,8 +124,6 @@ class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
             '[value.id.name="render"] [type="ReturnStatement"] > [arguments] > [callee.property.name="createElement"]'
         );
 
-        this.printDebug(reactCreateElementTags);
-
         /*
          * Filter elements that call React.createElement with exactly two parameters
          * Either it's an object literal {...} or null
