@@ -5,6 +5,7 @@ class ModelExtractorChain {
         this.extractors = [
             new ComponentNameExtractor(),
             new ComponentProptypesExtractor(),
+            new ComponentDefaultPropsExtractor(),
             new ComponentFunctionsExtractor(),
             new ComponentDependencyExtractor(),
             new ComponentRenderPropsExtractor()
@@ -100,6 +101,21 @@ class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
                     type: a.getContents().value.property.name
                 };
             });
+    }
+}
+
+class ComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let defValues = component.queryAst(
+            '[type="FunctionExpression"][id.name="getDefaultProps"] [type="ReturnStatement"] [properties] [type="Property"]'
+        );
+
+        return defValues.map(a => {
+            return {
+                name: a.getContents().key.name,
+                value: a.getContents().value.value
+            };
+        });
     }
 }
 
