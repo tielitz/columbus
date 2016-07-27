@@ -11,7 +11,8 @@ angular.module('columbusApp', ['ngMaterial'])
 
         $scope.syntaxContent = '';
         $scope.tokensContent = '';
-        $scope.modelContent  = '';
+        $scope.infoBaseContent  = '';
+        $scope.modelContent = '';
 
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
@@ -26,9 +27,14 @@ angular.module('columbusApp', ['ngMaterial'])
             $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedJsxCode), null, '\t');
 
             let modelExtractorChain = new ModelExtractorChain();
-            let extractedModel = modelExtractorChain.apply(ast);
+            let extractedInfoBase = modelExtractorChain.apply(ast);
 
-            $scope.modelContent = JSON.stringify(extractedModel, null, '\t');
+            $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
+
+            let modelGenerator = new ModelGenerator();
+            let generatedModel = modelGenerator.generate(extractedInfoBase);
+
+            $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
         }
 
 

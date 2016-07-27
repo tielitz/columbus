@@ -76,16 +76,22 @@
                             <editor type='json' content="tokensContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
-                    <md-tab id="model">
-                        <md-tab-label>Model</md-tab-label>
+                    <md-tab id="infobase">
+                        <md-tab-label>Info Base</md-tab-label>
                         <md-tab-body>
-                            <editor type='json' content="modelContent" readonly></editor>
+                            <editor type='json' content="infoBaseContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="model">
                         <md-tab-label>Dependencies</md-tab-label>
                         <md-tab-body>
-                            <dependency-graph content="modelContent" width=660 height=700></dependency-graph>
+                            <dependency-graph content="infoBaseContent" width=660 height=700></dependency-graph>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="infobase">
+                        <md-tab-label>Model</md-tab-label>
+                        <md-tab-body>
+                            <editor type='json' content="modelContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                 </md-tabs>
@@ -119,6 +125,7 @@
 <script src="scripts/ast.js"></script>
 <script src="scripts/parser.js"></script>
 <script src="scripts/extractor.js"></script>
+<script src="scripts/generator.js"></script>
 <script src="scripts/app.js"></script>
 
 
