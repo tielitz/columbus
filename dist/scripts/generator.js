@@ -38,39 +38,66 @@ class ObjectUtil {
     }
 }
 
+class ComponentModel {
+    constructor(name) {
+        this.name = name;
+        this.structure = [];
+        this.behaviour = [];
+        this.content = [];
+        this.style = {properties: []};
+    }
+
+    addComponentDependency(dependency) {
+        this.structure.push(dependency);
+    }
+
+    addVariable(name, type, value) {
+        // TODO
+    }
+
+    toString() {
+        return {
+            structure: this.structure,
+            behaviour: this.behaviour,
+            content: this.content,
+            style: this.style,
+        };
+    }
+}
+
+class ComponentModelContainer {
+    constructor() {
+        this.models = {};
+    }
+
+    addComponentModel(model) {
+        this.models[model.name] = model;
+    }
+
+    toObject() {
+        let obj = {};
+        for (let key in this.models) {
+            obj[key] = this.models[key].toString();
+        }
+        return obj;
+    }
+}
 
 class ModelGenerator {
     generate(informationBase) {
         console.log('[ModelGenerator] started generation process', informationBase);
-        let componentModel = ComponentModelUtil.getEmptyModel();
+        let componentModelContainer = new ComponentModelContainer();
 
-        componentModel.structure = this.createComponentStructure(informationBase);
-
-        return {
-            app: componentModel
-        };
-    }
-
-    createComponentStructure(informationBase) {
-        let allComponentModels = informationBase.ComponentNameExtractor.map(a => ComponentModelUtil.getComponentModel(a));
-        let componentDependencies = informationBase.ComponentDependencyExtractor;
-        console.log('[createComponentStructure]', allComponentModels, componentDependencies);
-
-        let uniqueDependencyValues = ObjectUtil.getUniqueValues(componentDependencies);
-        let componentStructureModel = [];
-
-        // All components that never appear on the right side are top level components
-        for (let component of allComponentModels) {
-            // Check if specific component exists as a dependency
-            if (uniqueDependencyValues.every(el => el !== component.name)) {
-                // does not appear anywhere else
-                console.log('[ModelGenerator] Top Level Component: ' + component.name);
-                componentStructureModel.push(component);
-            }
+        // Create structural dependencies and initial setup
+        for (let entry in informationBase.ComponentDependencyExtractor) {
+            // iterate over the component dependencies
+            let componentModel = new ComponentModel(entry);
+            informationBase.ComponentDependencyExtractor[entry].forEach(a => componentModel.addComponentDependency(a));
+            componentModelContainer.addComponentModel(componentModel);
         }
 
-        //
 
-        return componentStructureModel;
+        console.log('[ModelGenerator] model', componentModelContainer.toObject());
+        return {components: componentModelContainer.toObject()};
     }
 }

@@ -7,7 +7,57 @@ angular.module('columbusApp', ['ngMaterial'])
             throw new Error('This Application depends on Esprima library - http://esprima.org/');
         }
 
-        $scope.jsContent = '';
+        $scope.jsContent = `
+'use strict';
+
+var HelloWorld = React.createClass({
+  propTypes: {
+    asdf: React.PropTypes.string
+  },
+  sayGreeting: function () {
+    return 'Hello';
+  },
+  render: function() {
+    return (
+        <div>
+          {this.sayGreeting()}, {this.props.asdf}!
+        </div>
+      );
+  }
+});
+
+var AdvancedHelloWorld = React.createClass({
+  displayName: 'AdvancedHelloWorld',
+
+  propTypes: {
+    greeting: React.PropTypes.bool,
+    name: React.PropTypes.string
+  },
+  getDefaultProps: function getDefaultProps() {
+    return {
+      greeting: true,
+      name: 'Dummy'
+    };
+  },
+  sayHello: function sayHello(param1, param2) {
+    return 'Hello';
+  },
+  shouldGreet: function shouldGreet(param3) {
+    return this.props.greeting;
+  },
+
+  render: function render() {
+    return (
+      <div>
+        <div>{this.shouldGreet() ? this.sayHello() : ''} {this.props.name}!</div>
+        <HelloWorld name="Second" />
+        <SecondComponent />
+      </div>
+    );
+  }
+});
+    `;
+
 
         $scope.syntaxContent = '';
         $scope.tokensContent = '';
