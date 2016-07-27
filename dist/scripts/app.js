@@ -130,6 +130,10 @@ var AdvancedHelloWorld = React.createClass({
                 editor.setOption("minLines", 5);
                 editor.setOption("maxLines", 50);
 
+                if (mode === 'ace/mode/json') {
+                    editor.setOption('tabSize', 2);
+                }
+
                 if (scope.readonly !== undefined) {
                     editor.setReadOnly(true);
                 }
