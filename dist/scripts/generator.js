@@ -41,21 +41,53 @@ class ObjectUtil {
 class ComponentModel {
     constructor(name) {
         this.name = name;
-        this.structure = [];
-        this.behaviour = [];
-        this.content = [];
-        this.style = {properties: []};
+        this.structure = {};
+        this.behaviour = {};
+        this.content = {};
+        this.style = {};
     }
 
     addComponentDependency(dependency) {
-        this.structure.push(dependency);
+        if (this.structure.dependencies === undefined) {
+            this.structure.dependencies = [];
+        }
+        this.structure.dependencies.push(dependency);
     }
 
     addVariable(name, type, value) {
-        // TODO
+        if (this.content.variables === undefined) {
+            this.content.variables = [];
+        }
+
+        // check if variable already exists
+        let entry = this.content.variables.find(el => el.name === name);
+
+        if (entry === undefined) {
+            // new variable, add to model
+            this.content.variables.push({
+                name: name,
+                type: type,
+                value: value
+            });
+        } else {
+            // entry already exists. update parameters
+            entry.type = (type !== undefined) ? type : entry.type;
+            entry.value = (value !== undefined) ? value : entry.value;
+        }
     }
 
-    toString() {
+    addFunction(name, params) {
+        if (this.behaviour.functions === undefined) {
+            this.behaviour.functions = [];
+        }
+
+        this.behaviour.functions.push({
+            name: name,
+            params: params
+        });
+    }
+
+    toObject() {
         return {
             structure: this.structure,
             behaviour: this.behaviour,
@@ -74,10 +106,18 @@ class ComponentModelContainer {
         this.models[model.name] = model;
     }
 
+    getComponent(component) {
+        return this.models[component];
+    }
+
+    getComponentKeys() {
+        return Object.keys(this.models);
+    }
+
     toObject() {
         let obj = {};
         for (let key in this.models) {
-            obj[key] = this.models[key].toString();
+            obj[key] = this.models[key].toObject();
         }
         return obj;
     }
@@ -94,6 +134,21 @@ class ModelGenerator {
             let componentModel = new ComponentModel(entry);
             informationBase.ComponentDependencyExtractor[entry].forEach(a => componentModel.addComponentDependency(a));
             componentModelContainer.addComponentModel(componentModel);
+        }
+
+        // Add functions
+        for (let entry in informationBase.ComponentFunctionsExtractor) {
+            let componentModel = componentModelContainer.getComponent(entry);
+            informationBase.ComponentFunctionsExtractor[entry].forEach(a => componentModel.addFunction(a.name, a.params));
+        }
+
+        // Add variables
+        // Variables can be declared in ComponentProptypesExtractor || ComponentRenderPropsExtractor
+        for (let entry in informationBase.ComponentProptypesExtractor) {
+            let componentModel = componentModelContainer.getComponent(entry);
+            informationBase.ComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+            informationBase.ComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+            informationBase.ComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
         }
 
 

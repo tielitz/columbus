@@ -163,6 +163,8 @@ class ComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
             '[key.name="render"] [type="MemberExpression"][object.property.name="props"]'
         );
 
-        return props.map(a => a.getContents().property.name);
+        return props.map(a => {
+            return {name: a.getContents().property.name};
+        });
     }
 }
