@@ -8,7 +8,8 @@ class ModelExtractorChain {
             new ComponentDefaultPropsExtractor(),
             new ComponentFunctionsExtractor(),
             new ComponentDependencyExtractor(),
-            new ComponentRenderPropsExtractor()
+            new ComponentRenderPropsExtractor(),
+            new ComponentRenderStyleExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -165,6 +166,27 @@ class ComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
 
         return props.map(a => {
             return {name: a.getContents().property.name};
+        });
+    }
+}
+
+class ComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let styles = component.queryAst(
+            '[type="FunctionExpression"][id.name="render"] [type="ObjectExpression"] [type="Property"][key.name="style"]'
+        );
+
+        return styles.map(a => {
+            return a.getContents().value.value
+                .split(';')
+                .map(e => e.trim())
+                .filter(el => el !== '') // Remove empty string if ; was the last character
+                .map(el => {
+                    return {
+                        name: el.split(':')[0].trim(),
+                        value: el.split(':')[1].trim(),
+                    };
+                });
         });
     }
 }

@@ -87,6 +87,32 @@ class ComponentModel {
         });
     }
 
+    addSingleStyle(name, value) {
+        if (this.style.properties === undefined) {
+            this.style.properties = [];
+        }
+        this.style.properties.push({
+            name: name,
+            value: value
+        });
+    }
+    addMultipleStyles(styles) {
+        if (this.style.properties === undefined) {
+            this.style.properties = [];
+        }
+
+        let node = [];
+
+        styles.forEach(style => {
+            node.push({
+                name: style.name,
+                value: style.value
+            });
+        });
+
+        this.style.properties.push(node);
+    }
+
     toObject() {
         return {
             structure: this.structure,
@@ -149,6 +175,12 @@ class ModelGenerator {
             informationBase.ComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
             informationBase.ComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
             informationBase.ComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+        }
+
+        // CSS Styles
+        for (let entry in informationBase.ComponentRenderStyleExtractor) {
+            let componentModel = componentModelContainer.getComponent(entry);
+            informationBase.ComponentRenderStyleExtractor[entry].forEach(a => componentModel.addMultipleStyles(a));
         }
 
 
