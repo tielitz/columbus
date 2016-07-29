@@ -76,14 +76,15 @@ class ComponentModel {
         }
     }
 
-    addFunction(name, params) {
+    addFunction(name, params, returnType) {
         if (this.behaviour.functions === undefined) {
             this.behaviour.functions = [];
         }
 
         this.behaviour.functions.push({
             name: name,
-            params: params
+            params: params,
+            returnType: returnType
         });
     }
 
@@ -165,7 +166,15 @@ class ModelGenerator {
         // Add functions
         for (let entry in informationBase.ComponentFunctionsExtractor) {
             let componentModel = componentModelContainer.getComponent(entry);
-            informationBase.ComponentFunctionsExtractor[entry].forEach(a => componentModel.addFunction(a.name, a.params));
+            informationBase.ComponentFunctionsExtractor[entry].forEach(func => {
+
+                if (informationBase.ComponentFunctionReturnValueExtractor[entry][func.name] !== undefined) {
+                    // the information base contains information about the return value
+                    componentModel.addFunction(func.name, func.params, informationBase.ComponentFunctionReturnValueExtractor[entry][func.name])
+                } else {
+                    componentModel.addFunction(func.name, func.params)
+                }
+            });
         }
 
         // Add variables

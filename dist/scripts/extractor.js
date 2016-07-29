@@ -9,7 +9,8 @@ class ModelExtractorChain {
             new ComponentFunctionsExtractor(),
             new ComponentDependencyExtractor(),
             new ComponentRenderPropsExtractor(),
-            new ComponentRenderStyleExtractor()
+            new ComponentRenderStyleExtractor(),
+            new ComponentFunctionReturnValueExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -188,5 +189,59 @@ class ComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
                     };
                 });
         });
+    }
+}
+
+class ComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let functions = component.queryAst(
+            '[type="FunctionExpression"]'
+        );
+
+        let extractedFunctionReturns = {};
+
+        // retrieve the ReturnStatements for each function
+        for (let func of functions) {
+            let returnStatements = func.queryAst('[type="ReturnStatement"]');
+
+            if (extractedFunctionReturns[func.getContents().id.name] === undefined) {
+                extractedFunctionReturns[func.getContents().id.name] = [];
+            }
+
+            returnStatements.forEach(a => {
+
+                let foo = {
+                    type: a.getContents().argument.type,
+                };
+
+                if (foo.type === 'Literal') {
+                    foo.value = a.getContents().argument.value;
+                } else if (foo.type === 'Identifier') {
+                    foo.name = a.getContents().argument.name;
+                } else if (foo.type === 'MemberExpression') {
+                    foo.property = a.getContents().argument.property.name;
+                }
+
+                extractedFunctionReturns[func.getContents().id.name].push(foo);
+            });
+        }
+
+        console.log('[ComponentFunctionReturnValueExtractor] return statements ', extractedFunctionReturns);
+
+        return extractedFunctionReturns;
+
+
+        // return styles.map(a => {
+        //     return a.getContents().value.value
+        //         .split(';')
+        //         .map(e => e.trim())
+        //         .filter(el => el !== '') // Remove empty string if ; was the last character
+        //         .map(el => {
+        //             return {
+        //                 name: el.split(':')[0].trim(),
+        //                 value: el.split(':')[1].trim(),
+        //             };
+        //         });
+        // });
     }
 }
