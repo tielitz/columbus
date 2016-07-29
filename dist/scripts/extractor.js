@@ -10,7 +10,8 @@ class ModelExtractorChain {
             new ComponentDependencyExtractor(),
             new ComponentRenderPropsExtractor(),
             new ComponentRenderStyleExtractor(),
-            new ComponentFunctionReturnValueExtractor()
+            new ComponentFunctionReturnValueExtractor(),
+            new ComponentRenderHtmlExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -229,19 +230,48 @@ class ComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtrac
         console.log('[ComponentFunctionReturnValueExtractor] return statements ', extractedFunctionReturns);
 
         return extractedFunctionReturns;
+    }
+}
+
+// Limiting  extractor to first return statement
+class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let renderReturnStatements = component.queryAst(
+            '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"]:first-child'
+        );
+        let renderReturnStatment = renderReturnStatements[0];
 
 
-        // return styles.map(a => {
-        //     return a.getContents().value.value
-        //         .split(';')
-        //         .map(e => e.trim())
-        //         .filter(el => el !== '') // Remove empty string if ; was the last character
-        //         .map(el => {
-        //             return {
-        //                 name: el.split(':')[0].trim(),
-        //                 value: el.split(':')[1].trim(),
-        //             };
-        //         });
-        // });
+        let htmlStructure = this.parseLevel(renderReturnStatment.getContents().argument.arguments);
+
+        return htmlStructure;
+
+    }
+
+    parseLevel(levelContent) {
+        console.log('[ComponentRenderHtmlExtractor] parse level', levelContent);
+
+        let returnedContent = [];
+
+        for (let entry of levelContent) {
+
+            if (entry.type === 'Literal' && entry.value !== null) {
+                returnedContent.push(entry.value);
+            } else if (entry.type === 'CallExpression') {
+                // check if it's a call to React.createElement or just normal method
+                if (this.isReactCreateElement(entry)) {
+                    // increase level
+                    returnedContent.push(this.parseLevel(entry.arguments));
+                } else {
+                    // regular method call, ignore for now
+                }
+            }
+        }
+
+        return returnedContent;
+    }
+
+    isReactCreateElement(entry) {
+        return entry.type === 'CallExpression' && entry.callee.object.name === 'React' && entry.callee.property.name === 'createElement';
     }
 }

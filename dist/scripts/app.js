@@ -48,8 +48,13 @@ var AdvancedHelloWorld = React.createClass({
 
   render: function render() {
     return (
-      <div style="color: #000;font-weight:bold;">
-        <div>{this.shouldGreet() ? this.sayHello() : ''} {this.props.name}!</div>
+        <div style="color: #000;font-weight:bold;">
+        <div id="header">
+          <img src="" />
+        </div>
+        <div id="body">
+          <p>{this.shouldGreet() ? this.sayHello() : ''} <i>{this.props.name}</i>!</p>
+        </div>
         <HelloWorld name="Second" />
         <SecondComponent />
       </div>
