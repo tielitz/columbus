@@ -38,7 +38,7 @@ class ReactAst extends Ast {
 }
 
 class AstHelper {
-    static extractMemberExpression(expr) {
+    static extractExpression(expr) {
         let type = expr.type;
 
         if (type === 'ThisExpression') {
@@ -49,8 +49,14 @@ class AstHelper {
             return expr.name;
         }
 
-        // if (type === 'MemberExpression') {
-            return this.extractMemberExpression(expr.object) + '.'+expr.property.name;
-        // }
+        if (type === 'MemberExpression') {
+            return this.extractExpression(expr.object) + '.'+expr.property.name;
+        }
+
+        if (type === 'CallExpression') {
+            return this.extractExpression(expr.callee) + '()';
+        }
+
+        return null;
     }
 }

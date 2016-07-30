@@ -101,7 +101,7 @@ class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
             .map(a => {
                 return {
                     name: a.getContents().key.name,
-                    type: AstHelper.extractMemberExpression(a.getContents().value)
+                    type: AstHelper.extractExpression(a.getContents().value)
                 };
             });
     }
@@ -276,14 +276,14 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
             if (child.type === 'Literal') {
                 childContent.push("'" + child.value + "'");
             } else if (child.type === 'MemberExpression') {
-                childContent.push(this.handleMemberExpression(child));
+                childContent.push(AstHelper.extractExpression(child));
             } else if (child.type === 'CallExpression') {
                 // either it's React.createElement or an arbitrary function
                 if (this.isReactCreateElement(child)) {
                     // start recursive tree
                     childContent = childContent.concat(this.parseCreateElement(child.arguments));
                 }  else {
-                    childContent.push(this.handleCallExpression(child));
+                    childContent.push(AstHelper.extractExpression(child));
                 }
             } else {
                 childContent.push('Unknown type: ' + child.type);
@@ -297,15 +297,7 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
         return parentContent;
     }
 
-    handleMemberExpression(expr) {
-        return AstHelper.extractMemberExpression(expr);
-    }
-
-    handleCallExpression(expr) {
-        return 'CallExpression';
-    }
-
     isReactCreateElement(entry) {
-        return entry.type === 'CallExpression' && entry.callee.object.name === 'React' && entry.callee.property.name === 'createElement';
+        return entry.type === 'CallExpression' && AstHelper.extractExpression(entry) === 'React.createElement()';
     }
 }
