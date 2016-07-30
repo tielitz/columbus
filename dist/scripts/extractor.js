@@ -242,33 +242,67 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
 
         if (renderReturnStatements.length > 0) {
             let renderReturnStatment = renderReturnStatements[0];
-            let htmlStructure = this.parseLevel(renderReturnStatment.getContents().argument.arguments);
+            let htmlStructure = this.parseCreateElement(renderReturnStatment.getContents().argument.arguments);
             return htmlStructure;
         }
         return null;
     }
 
-    parseLevel(levelContent) {
-        console.log('[ComponentRenderHtmlExtractor] parse level', levelContent);
+    parseCreateElement(content) {
 
-        let returnedContent = [];
+        console.log('[ComponentRenderHtmlExtractor] parseCreateElement', content);
 
-        for (let entry of levelContent) {
+        // element 0 contains key
+        // element 1 contains tags for the key
+        // element 2-(n-1) contain arbitrary child elements
+        let parentContent = [];
+        let childContent = [];
 
-            if (entry.type === 'Literal' && entry.value !== null) {
-                returnedContent.push(entry.value);
-            } else if (entry.type === 'CallExpression') {
-                // check if it's a call to React.createElement or just normal method
-                if (this.isReactCreateElement(entry)) {
-                    // increase level
-                    returnedContent.push(this.parseLevel(entry.arguments));
-                } else {
-                    // regular method call, ignore for now
+        // append first entry
+        switch (content[0].type) {
+            case 'Literal':
+                parentContent.push(content[0].value);
+                break;
+            case 'Identifier':
+                parentContent.push(content[0].name);
+                break;
+            default:
+                throw Exception('Unexpected content[0] type ' + content[0].type);
+        }
+
+        for (let i = 2; i < content.length; i++) {
+            let child = content[i];
+
+            if (child.type === 'Literal') {
+                childContent.push("'" + child.value + "'");
+            } else if (child.type === 'MemberExpression') {
+                childContent.push(this.handleMemberExpression(child));
+            } else if (child.type === 'CallExpression') {
+                // either it's React.createElement or an arbitrary function
+                if (this.isReactCreateElement(child)) {
+                    // start recursive tree
+                    childContent = childContent.concat(this.parseCreateElement(child.arguments));
+                }  else {
+                    childContent.push(this.handleCallExpression(child));
                 }
+            } else {
+                childContent.push('Unknown type: ' + child.type);
             }
         }
 
-        return returnedContent;
+        if (childContent.length > 0) {
+            parentContent.push(childContent);
+        }
+
+        return parentContent;
+    }
+
+    handleMemberExpression(expr) {
+        return AstHelper.extractMemberExpression(expr);
+    }
+
+    handleCallExpression(expr) {
+        return 'CallExpression';
     }
 
     isReactCreateElement(entry) {

@@ -36,3 +36,17 @@ class ReactAst extends Ast {
         });
     }
 }
+
+class AstHelper {
+    static extractMemberExpression(expr) {
+        let type = expr.type;
+
+        if (type === 'ThisExpression') {
+            return 'this';
+        }
+
+        // if (type === 'MemberExpression') {
+            return this.extractMemberExpression(expr.object) + '.'+expr.property.name;
+        // }
+    }
+}
