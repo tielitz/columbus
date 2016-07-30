@@ -45,6 +45,10 @@ class AstHelper {
             return 'this';
         }
 
+        if (type === 'Identifier') {
+            return expr.name;
+        }
+
         // if (type === 'MemberExpression') {
             return this.extractMemberExpression(expr.object) + '.'+expr.property.name;
         // }

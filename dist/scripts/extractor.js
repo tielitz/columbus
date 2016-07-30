@@ -101,7 +101,7 @@ class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
             .map(a => {
                 return {
                     name: a.getContents().key.name,
-                    type: a.getContents().value.property.name
+                    type: AstHelper.extractMemberExpression(a.getContents().value)
                 };
             });
     }
