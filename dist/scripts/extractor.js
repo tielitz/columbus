@@ -239,13 +239,13 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
         let renderReturnStatements = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"]:first-child'
         );
-        let renderReturnStatment = renderReturnStatements[0];
 
-
-        let htmlStructure = this.parseLevel(renderReturnStatment.getContents().argument.arguments);
-
-        return htmlStructure;
-
+        if (renderReturnStatements.length > 0) {
+            let renderReturnStatment = renderReturnStatements[0];
+            let htmlStructure = this.parseLevel(renderReturnStatment.getContents().argument.arguments);
+            return htmlStructure;
+        }
+        return null;
     }
 
     parseLevel(levelContent) {

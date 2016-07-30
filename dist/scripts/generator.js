@@ -55,16 +55,16 @@ class ComponentModel {
     }
 
     addVariable(name, type, value) {
-        if (this.content.variables === undefined) {
-            this.content.variables = [];
+        if (this.style.properties === undefined) {
+            this.style.properties = [];
         }
 
         // check if variable already exists
-        let entry = this.content.variables.find(el => el.name === name);
+        let entry = this.style.properties.find(el => el.name === name);
 
         if (entry === undefined) {
             // new variable, add to model
-            this.content.variables.push({
+            this.style.properties.push({
                 name: name,
                 type: type,
                 value: value
@@ -187,10 +187,10 @@ class ModelGenerator {
         }
 
         // CSS Styles
-        for (let entry in informationBase.ComponentRenderStyleExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-            informationBase.ComponentRenderStyleExtractor[entry].forEach(a => componentModel.addMultipleStyles(a));
-        }
+        // for (let entry in informationBase.ComponentRenderStyleExtractor) {
+        //     let componentModel = componentModelContainer.getComponent(entry);
+        //     informationBase.ComponentRenderStyleExtractor[entry].forEach(a => componentModel.addMultipleStyles(a));
+        // }
 
 
         console.log('[ModelGenerator] model', componentModelContainer.toObject());
