@@ -72,24 +72,33 @@ var AdvancedHelloWorld = React.createClass({
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
 
-            let jsxParser = new JsxParser();
-            let astParser = new AstParser($window.esprima);
+            try {
 
-            let parsedJsxCode = jsxParser.transform($scope.jsContent);
-            let ast = astParser.parseReact(parsedJsxCode);
+                let jsxParser = new JsxParser();
+                let astParser = new AstParser($window.esprima);
 
-            $scope.syntaxContent = ast.asJson();
-            $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedJsxCode), null, '\t');
 
-            let modelExtractorChain = new ModelExtractorChain();
-            let extractedInfoBase = modelExtractorChain.apply(ast);
+                let parsedJsxCode = jsxParser.transform($scope.jsContent);
+                let ast = astParser.parseReact(parsedJsxCode);
 
-            $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
+                $scope.syntaxContent = ast.asJson();
+                $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedJsxCode), null, '\t');
 
-            let modelGenerator = new ModelGenerator();
-            let generatedModel = modelGenerator.generate(extractedInfoBase);
+                let modelExtractorChain = new ModelExtractorChain();
+                let extractedInfoBase = modelExtractorChain.apply(ast);
 
-            $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
+                $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
+
+                let modelGenerator = new ModelGenerator();
+                let generatedModel = modelGenerator.generate(extractedInfoBase);
+
+                $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
+
+            } catch (err) {
+                console.log(err);
+                alert('Error ' + err);
+                throw err;
+            }
         }
 
 
@@ -133,7 +142,7 @@ var AdvancedHelloWorld = React.createClass({
                 editor.$blockScrolling = Infinity;
                 editor.setAutoScrollEditorIntoView(true);
                 editor.setOption("minLines", 5);
-                editor.setOption("maxLines", 50);
+                editor.setOption("maxLines", 35);
 
                 if (mode === 'ace/mode/json') {
                     editor.setOption('tabSize', 2);
