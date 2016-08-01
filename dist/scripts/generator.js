@@ -54,6 +54,10 @@ class ComponentModel {
         this.structure.dependencies.push(dependency);
     }
 
+    addParts(parts) {
+        this.structure.parts = parts;
+    }
+
     addVariable(name, type, value) {
         if (this.style.properties === undefined) {
             this.style.properties = [];
@@ -159,8 +163,14 @@ class ModelGenerator {
         for (let entry in informationBase.ComponentDependencyExtractor) {
             // iterate over the component dependencies
             let componentModel = new ComponentModel(entry);
-            informationBase.ComponentDependencyExtractor[entry].forEach(a => componentModel.addComponentDependency(a));
+            // informationBase.ComponentDependencyExtractor[entry].forEach(a => componentModel.addComponentDependency(a));
             componentModelContainer.addComponentModel(componentModel);
+        }
+
+        // Add parts
+        for (let entry in informationBase.ComponentRenderHtmlExtractor) {
+            let componentModel = componentModelContainer.getComponent(entry);
+            informationBase.ComponentRenderHtmlExtractor[entry].forEach(a => componentModel.addParts(a));
         }
 
         // Add functions
