@@ -140,23 +140,10 @@ class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
 class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let reactCreateElementTags = component.queryAst(
-            '[value.id.name="render"] [type="ReturnStatement"] > [arguments] > [callee.property.name="createElement"]'
+            '[value.id.name="render"] [type="ReturnStatement"] [arguments] [type="Identifier"]:first-child'
         );
 
-        /*
-         * Filter elements that call React.createElement with exactly two parameters
-         * Either it's an object literal {...} or null
-         */
-        return reactCreateElementTags.filter(a => {
-            console.log(a.getContents().arguments.length === 2);
-            return a.getContents().arguments.length === 2
-                && a.getContents().arguments[0].type === 'Identifier'
-                && (
-                    a.getContents().arguments[1].type === 'ObjectExpression'
-                    || a.getContents().arguments[1].type === 'Literal'
-                );
-            })
-            .map(a => a.getContents().arguments[0].name);
+        return reactCreateElementTags.map(a => a.getContents().name);
     }
 }
 

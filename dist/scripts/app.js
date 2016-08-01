@@ -21,6 +21,7 @@ var HelloWorld = React.createClass({
     return (
         <div>
           {this.sayGreeting()}, {this.props.asdf}!
+          <HelloWorld><Child /></HelloWorld>
         </div>
       );
   }
