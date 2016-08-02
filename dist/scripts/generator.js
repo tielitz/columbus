@@ -69,6 +69,7 @@ class ComponentModel {
         if (entry === undefined) {
             // new variable, add to model
             this.style.properties.push({
+                _entity: 'property',
                 name: name,
                 type: type,
                 value: value
@@ -86,6 +87,7 @@ class ComponentModel {
         }
 
         this.behaviour.functions.push({
+            _entity: 'function',
             name: name,
             params: params,
             returnType: returnType
