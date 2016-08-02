@@ -118,6 +118,13 @@ class ComponentModel {
         this.style.properties.push(node);
     }
 
+    addBehaviourRule(rule) {
+        if (this.behaviour.rules === undefined) {
+            this.behaviour.rules = [];
+        }
+        this.behaviour.rules.push(rule);
+    }
+
     toObject() {
         return {
             structure: this.structure,
@@ -184,6 +191,24 @@ class ModelGenerator {
                 } else {
                     componentModel.addFunction(func.name, func.params)
                 }
+            });
+        }
+
+        // Behaviour rules
+        for (let entry in informationBase.ComponentRenderBehaviourExtractor) {
+            let componentModel = componentModelContainer.getComponent(entry);
+            // iterates over html elements
+            informationBase.ComponentRenderBehaviourExtractor[entry].forEach(entry => {
+
+                // each element can contain multiple events
+                entry.properties.forEach(event => {
+                    let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                    let rule = behaviourRuleBuilder
+                        .setEvent(event.event, entry.element) // TODO: missing any form of id
+                        .addMethod(event.action.split('.')[0], event.action.split('.')[1])
+                        .create();
+                    componentModel.addBehaviourRule(rule);
+                });
             });
         }
 
