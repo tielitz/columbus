@@ -59,4 +59,8 @@ class AstHelper {
 
         return null;
     }
+
+    static isReactCreateElement(entry) {
+        return entry.type === 'CallExpression' && AstHelper.extractExpression(entry) === 'React.createElement()';
+    }
 }

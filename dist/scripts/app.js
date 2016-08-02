@@ -50,7 +50,7 @@ var AdvancedHelloWorld = React.createClass({
   render: function render() {
     return (
         <div style="color: #000;font-weight:bold;">
-        <div id="header">
+        <div id="header" onClick={this.sayHello()}>
           <img src="" />
         </div>
         <div id="body">

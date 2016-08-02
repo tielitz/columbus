@@ -11,7 +11,8 @@ class ModelExtractorChain {
             new ComponentRenderPropsExtractor(),
             new ComponentRenderStyleExtractor(),
             new ComponentFunctionReturnValueExtractor(),
-            new ComponentRenderHtmlExtractor()
+            new ComponentRenderHtmlExtractor(),
+            new ComponentRenderBehaviourExtractor()
         ];
         console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -266,7 +267,7 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
                 childContent.push(AstHelper.extractExpression(child));
             } else if (child.type === 'CallExpression') {
                 // either it's React.createElement or an arbitrary function
-                if (this.isReactCreateElement(child)) {
+                if (AstHelper.isReactCreateElement(child)) {
                     // start recursive tree
                     childContent = childContent.concat(this.parseCreateElement(child.arguments));
                 }  else {
@@ -283,8 +284,43 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
 
         return parentContent;
     }
+}
 
-    isReactCreateElement(entry) {
-        return entry.type === 'CallExpression' && AstHelper.extractExpression(entry) === 'React.createElement()';
+class ComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let callExpressions = component.queryAst(
+            '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"] [type="CallExpression"]'
+        );
+
+        return callExpressions
+            .filter(a => AstHelper.isReactCreateElement(a.getContents()))
+            // The on... elements are always stored in the object literal on the second position
+            .filter(a => a.getContents().arguments.length >= 2 && a.getContents().arguments[1].type === 'ObjectExpression')
+            .map(a => {
+                return {
+                    element: this.extractEventSource(a.getContents().arguments[0]),
+                    properties: a.getContents().arguments[1].properties
+                        .filter(b => this.isBehaviouralProperty(b))
+                        .map(b => this.convertPropertyEntry(b))
+                };
+            })
+            .filter(parsedEntry => parsedEntry.properties.length > 0); // remove all entries with empty array
+    }
+
+    extractEventSource(entry) {
+        if (entry.type === 'Identifier') {
+            return entry.name; // component
+        }
+        return entry.value; // for strings
+    }
+
+    isBehaviouralProperty(entry) {
+        return entry.key.name.startsWith('on');
+    }
+
+    convertPropertyEntry(entry) {
+        let key = entry.key.name;
+        let action = AstHelper.extractExpression(entry.value);
+        return {event: key, action: action};
     }
 }
