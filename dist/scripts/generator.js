@@ -179,7 +179,7 @@ class ModelGenerator {
         // Add parts
         for (let entry in informationBase.ComponentRenderHtmlExtractor) {
             let componentModel = componentModelContainer.getComponent(entry);
-            informationBase.ComponentRenderHtmlExtractor[entry].forEach(a => componentModel.addParts(a));
+            componentModel.addParts(this.convertToStructurPartsModel(informationBase.ComponentRenderHtmlExtractor[entry]));
         }
 
         // Add functions
@@ -232,5 +232,38 @@ class ModelGenerator {
 
         console.log('[ModelGenerator] model', componentModelContainer.toObject());
         return {components: componentModelContainer.toObject()};
+    }
+
+    convertToStructurPartsModel(parts) {
+        let partEntry = {
+            _entity: 'part',
+            className: parts.value,
+            id: parts.id
+        };
+
+        // Add property which indicates where it should be stored
+        switch (parts.type) {
+            case 'Literal':
+                partEntry['_should'] = 'Content.Constant';
+                break;
+            case 'MemberExpression':
+                partEntry['_should'] = 'Style.Property';
+                break;
+            case 'CallExpression':
+                partEntry['_should'] = 'Behaviour.?';
+                break;
+        }
+
+        let partChildren = [];
+
+        if (parts.children !== undefined && parts.children.length > 0) {
+            parts.children.forEach(subpart => partChildren.push(this.convertToStructurPartsModel(subpart)));
+        }
+
+        if (partChildren.length > 0) {
+            partEntry.parts = partChildren;
+        }
+
+        return partEntry;
     }
 }

@@ -40,3 +40,18 @@ class BehaviourRuleBuilder {
         return output;
     }
 }
+
+class StructurePartBuilder {
+    constructor() {
+        this.reset();
+    }
+    reset() {
+        this.parts = [];
+    }
+    addPart() {
+
+    }
+    addChildPart() {
+        
+    }
+}

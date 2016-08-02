@@ -243,35 +243,43 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
         // element 0 contains key
         // element 1 contains tags for the key
         // element 2-(n-1) contain arbitrary child elements
-        let parentContent = [];
+        let parentContent = null;
         let childContent = [];
 
         // append first entry
         switch (content[0].type) {
             case 'Literal':
-                parentContent.push(content[0].value);
+                parentContent = {type: 'Literal', value: content[0].value};
                 break;
             case 'Identifier':
-                parentContent.push(content[0].name);
+                parentContent = {type: 'Identifier', value: content[0].name};
                 break;
             default:
                 throw Exception('Unexpected content[0] type ' + content[0].type);
+        }
+
+        // If an object {} is present at the second place, check if it contains an id property
+        if (content[1].type === 'ObjectExpression') {
+            let optionalId = content[1].properties.find(a => a.key.name === 'id');
+            if (optionalId !== undefined) {
+                parentContent.id = optionalId.value.value;
+            }
         }
 
         for (let i = 2; i < content.length; i++) {
             let child = content[i];
 
             if (child.type === 'Literal') {
-                childContent.push("'" + child.value + "'");
+                childContent.push({type: 'Literal', value: child.value});
             } else if (child.type === 'MemberExpression') {
-                childContent.push(AstHelper.extractExpression(child));
+                childContent.push({type: 'MemberExpression', value: AstHelper.extractExpression(child)});
             } else if (child.type === 'CallExpression') {
                 // either it's React.createElement or an arbitrary function
                 if (AstHelper.isReactCreateElement(child)) {
                     // start recursive tree
                     childContent = childContent.concat(this.parseCreateElement(child.arguments));
                 }  else {
-                    childContent.push(AstHelper.extractExpression(child));
+                    childContent.push({type: 'CallExpression', value: AstHelper.extractExpression(child)});
                 }
             } else {
                 childContent.push('Unknown type: ' + child.type);
@@ -279,7 +287,7 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
         }
 
         if (childContent.length > 0) {
-            parentContent.push(childContent);
+            parentContent.children = childContent;
         }
 
         return parentContent;
