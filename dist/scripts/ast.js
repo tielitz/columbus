@@ -49,6 +49,10 @@ class AstHelper {
             return expr.name;
         }
 
+        if (type === 'Literal') {
+            return expr.value;
+        }
+
         if (type === 'MemberExpression') {
             return this.extractExpression(expr.object) + '.'+expr.property.name;
         }
@@ -62,5 +66,15 @@ class AstHelper {
 
     static isReactCreateElement(entry) {
         return entry.type === 'CallExpression' && AstHelper.extractExpression(entry) === 'React.createElement()';
+    }
+
+    static extractFunctionParameters(expr) {
+        console.log('[AstHelper] extractFunctionParameters', expr);
+        return expr.arguments.map(a => {
+            return {
+                type: a.type,
+                value: AstHelper.extractExpression(a)
+            };
+        });
     }
 }

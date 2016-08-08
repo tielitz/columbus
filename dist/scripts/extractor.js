@@ -249,7 +249,7 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
         // append first entry
         switch (content[0].type) {
             case 'Literal':
-                parentContent = {type: 'Literal', value: content[0].value};
+                parentContent = {type: 'HtmlExpression', value: content[0].value};
                 break;
             case 'Identifier':
                 parentContent = {type: 'Identifier', value: content[0].name};
@@ -329,6 +329,7 @@ class ComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor 
     convertPropertyEntry(entry) {
         let key = entry.key.name;
         let action = AstHelper.extractExpression(entry.value);
-        return {event: key, action: action};
+        let parameters = AstHelper.extractFunctionParameters(entry.value);
+        return {event: key, action: action, params: parameters};
     }
 }

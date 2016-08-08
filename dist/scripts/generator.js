@@ -207,7 +207,7 @@ class ModelGenerator {
                     let behaviourRuleBuilder = new BehaviourRuleBuilder();
                     let rule = behaviourRuleBuilder
                         .setEvent(event.event, entry.element) // TODO: missing any form of id
-                        .addMethod(event.action.split('.')[0], event.action.split('.')[1])
+                        .addMethod(event.action.split('.')[0], event.action.split('.')[1], event.params)
                         .create();
                     componentModel.addBehaviourRule(rule);
                 });
@@ -243,6 +243,10 @@ class ModelGenerator {
 
         // Add property which indicates where it should be stored
         switch (parts.type) {
+            case 'HtmlExpression':
+                // the HtmlExpression should remain as a part
+                // maybe treat it as separate component?
+                break;
             case 'Literal':
                 partEntry['_should'] = 'Content.Constant';
                 break;
