@@ -20,7 +20,7 @@ class BehaviourRuleBuilder {
         return this;
     }
 
-    addMethod(componendId, methodId, parameters) {
+    addMethod(componendId, methodId, parameters = []) {
         if (this.rule.actions === undefined) {
             this.rule.actions = [];
         }

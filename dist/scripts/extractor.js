@@ -95,7 +95,7 @@ class ComponentNameExtractor extends AbstractExtractor {
 class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let propTypes = component.queryAst(
-            '[key.name="propTypes"]~[value] > [properties] > [type]'
+            '[key.name="propTypes"] > [properties] > [type]'
         );
 
         return propTypes
@@ -117,7 +117,7 @@ class ComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
         return defValues.map(a => {
             return {
                 name: a.getContents().key.name,
-                value: a.getContents().value.value
+                value: a.getContents().value.value // todo: extract expression should allow for methods
             };
         });
     }

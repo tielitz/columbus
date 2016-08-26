@@ -179,22 +179,25 @@ class ModelGenerator {
         // Add parts
         for (let entry in informationBase.ComponentRenderHtmlExtractor) {
             let componentModel = componentModelContainer.getComponent(entry);
-            componentModel.addParts(this.convertToStructurPartsModel(informationBase.ComponentRenderHtmlExtractor[entry]));
+            componentModel.addParts(this.convertToStructurPartsModel(
+                informationBase.ComponentRenderHtmlExtractor[entry],
+                componentModel
+            ));
         }
 
         // Add functions
-        for (let entry in informationBase.ComponentFunctionsExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-            informationBase.ComponentFunctionsExtractor[entry].forEach(func => {
+        // for (let entry in informationBase.ComponentFunctionsExtractor) {
+        //     let componentModel = componentModelContainer.getComponent(entry);
+        //     informationBase.ComponentFunctionsExtractor[entry].forEach(func => {
 
-                if (informationBase.ComponentFunctionReturnValueExtractor[entry][func.name] !== undefined) {
-                    // the information base contains information about the return value
-                    componentModel.addFunction(func.name, func.params, informationBase.ComponentFunctionReturnValueExtractor[entry][func.name])
-                } else {
-                    componentModel.addFunction(func.name, func.params)
-                }
-            });
-        }
+        //         if (informationBase.ComponentFunctionReturnValueExtractor[entry][func.name] !== undefined) {
+        //             // the information base contains information about the return value
+        //             componentModel.addFunction(func.name, func.params, informationBase.ComponentFunctionReturnValueExtractor[entry][func.name])
+        //         } else {
+        //             componentModel.addFunction(func.name, func.params)
+        //         }
+        //     });
+        // }
 
         // Behaviour rules
         for (let entry in informationBase.ComponentRenderBehaviourExtractor) {
@@ -234,11 +237,10 @@ class ModelGenerator {
         return {components: componentModelContainer.toObject()};
     }
 
-    convertToStructurPartsModel(parts) {
+    convertToStructurPartsModel(parts, componentModel) {
         let partEntry = {
-            _entity: 'part',
-            className: parts.value,
-            id: parts.id
+            _entity:  parts.type === 'Identifier' ? 'reference' : 'part', // Identifier links to another component
+            id: parts.id || guid()
         };
 
         // Add property which indicates where it should be stored
@@ -246,22 +248,37 @@ class ModelGenerator {
             case 'HtmlExpression':
                 // the HtmlExpression should remain as a part
                 // maybe treat it as separate component?
+                partEntry['className'] = parts.value;
                 break;
+
             case 'Literal':
-                partEntry['_should'] = 'Content.Constant';
-                break;
             case 'MemberExpression':
-                partEntry['_should'] = 'Style.Property';
+                componentModel.addSingleStyle(partEntry['id'], parts.value);
                 break;
+
             case 'CallExpression':
-                partEntry['_should'] = 'Behaviour.?';
+                // Render is executed with componentWillMount.
+                // Therefore all output functions are evaluated at the same time
+
+                let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                let rule = behaviourRuleBuilder
+                    .setEvent('componentWillMount', partEntry['id']) // TODO: missing any form of id
+                    .addMethod(parts.value.split('.')[0], parts.value.split('.')[1], undefined)
+                    .create();
+                componentModel.addBehaviourRule(rule);
                 break;
+
+            default:
+                // fallback to check which element is missing
+                partEntry['className'] = parts.value;
         }
+
+        console.log('[convertToStructurPartsModel]', parts.value, parts.type);
 
         let partChildren = [];
 
         if (parts.children !== undefined && parts.children.length > 0) {
-            parts.children.forEach(subpart => partChildren.push(this.convertToStructurPartsModel(subpart)));
+            parts.children.forEach(subpart => partChildren.push(this.convertToStructurPartsModel(subpart, componentModel)));
         }
 
         if (partChildren.length > 0) {
