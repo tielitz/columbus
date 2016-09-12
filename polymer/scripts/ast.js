@@ -33,7 +33,26 @@ class ReactAst extends Ast {
         return components.filter(a => {
             return a.getContents().init.callee.object.name === 'React'
                     && a.getContents().init.callee.property.name === 'createClass'
-        });
+        }).map(a => new ReactAst(a.getContents()));
+    }
+    getName() {
+        return this.getContents().id.name;
+    }
+}
+
+class PolymerAst extends Ast {
+    getComponents() {
+        let components = this.queryAst(
+            '[body]>[type=ExpressionStatement][expression.type=CallExpression][expression.callee.name=Polymer]'
+        );
+        return components.map(a => new PolymerAst(a.getContents()));
+    }
+    getName() {
+        console.log('[PolymerAst] getName', this.getContents());
+        let name = this.queryAst(
+            '[type=Property][key.type=Identifier][key.name=is]'
+        );
+        return name[0].getContents().value.value;
     }
 }
 

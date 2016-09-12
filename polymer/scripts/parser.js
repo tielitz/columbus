@@ -12,6 +12,10 @@ class AstParser {
         let ast = this.parser.parse(code);
         return new ReactAst(ast);
     }
+    parsePolymer(code) {
+        let ast = this.parser.parse(code);
+        return new PolymerAst(ast);
+    }
 }
 
 class TokenParser {

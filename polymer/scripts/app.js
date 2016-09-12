@@ -60,7 +60,7 @@ Polymer({
 
 
                 let parsedJsxCode = jsxParser.transform($scope.jsContent);
-                let ast = astParser.parseReact(parsedJsxCode);
+                let ast = astParser.parsePolymer(parsedJsxCode);
 
                 $scope.syntaxContent = ast.asJson();
                 $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedJsxCode), null, '\t');

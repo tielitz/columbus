@@ -3,7 +3,7 @@
 class ModelExtractorChain {
     constructor() {
         this.extractors = [
-            // new ComponentNameExtractor(),
+            new ComponentNameExtractor(),
             // new ComponentProptypesExtractor(),
             // new ComponentDefaultPropsExtractor(),
             // new ComponentFunctionsExtractor(),
@@ -71,7 +71,7 @@ class AbstractComponentBasedExtractor extends AbstractExtractor {
         let output = {};
 
         for (let component of components) {
-            output[component.getContents().id.name] = this.extractFromComponent(component);
+            output[component.getName()] = this.extractFromComponent(component);
         }
 
         return output;
@@ -88,7 +88,7 @@ class AbstractComponentBasedExtractor extends AbstractExtractor {
 class ComponentNameExtractor extends AbstractExtractor {
     extract(input) {
         let components = input.getComponents();
-        return components.map(a => a.getContents().id.name);
+        return components.map(a => a.getName());
     }
 }
 
