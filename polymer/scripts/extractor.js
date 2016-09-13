@@ -6,6 +6,7 @@ class ModelExtractorChain {
             new ComponentNameExtractor(),
             new ComponentPropertiesExtractor(),
             new ComponentFunctionsExtractor(),
+            new ComponentListenersExtractor()
             // new ComponentDependencyExtractor(),
             // new ComponentRenderPropsExtractor(),
             // new ComponentRenderStyleExtractor(),
@@ -124,6 +125,29 @@ class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
                 params: a.getContents().value.params.map(e => e.name)
             }
         });
+    }
+}
+
+class ComponentListenersExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let listeners = component.queryAst(
+            '[type=Property][key.type=Identifier][key.name=listeners]>[properties]>[type=Property]'
+        );
+
+        return listeners.map(a => this.parseListenerEntry(a.getContents()));
+    }
+
+    parseListenerEntry(entry) {
+
+        // key is either a single value (event) or target.event
+        let key = AstHelper.extractExpression(entry.key);
+        let keyParts = key.split('.');
+
+        return {
+            'target': keyParts.length > 1 ? keyParts[0] : undefined,
+            'event': keyParts.length > 1 ? keyParts[1] : keyParts[0],
+            'method': AstHelper.extractExpression(entry.value)
+        };
     }
 }
 
