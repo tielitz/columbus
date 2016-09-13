@@ -19,26 +19,51 @@ Polymer({
   onSelect: function(e, detail) {
     //
   },
+  created: function() {
+    //
+  },
+  nameChangedValue: function(newValue, oldValue) {
+    console.log('Variable name changed value');
+  },
   properties: {
     name: {
       type: String,
-      value: "Dummy"
+      value: "Dummy",
+      observer: 'nameChangedValue'
     },
     narrow: {
       type: Boolean,
       value: false
+    },
+    obj: {
+      type: Object,
+      value: function () { return {}; }
     }
   }
 });
 
-Polymer({
+var myElement = Polymer({
   is: 'x-app',
+  extends: 'input',
   removeElement: function() {
     this.$.el.remove();
+  },
+  listeners: {
+    'htmlid.tap': 'toggle',
+    'click': 'removeElement'
+  },
+  toggle: function() {
+    this.pressed = !this.pressed;
   },
   properties: {
     foo: {
       type: String,
+    },
+    pressed: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      reflectToAttribute: true
     }
   }
 });

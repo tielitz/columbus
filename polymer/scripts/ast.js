@@ -57,7 +57,7 @@ class ReactAst extends Ast {
 class PolymerAst extends Ast {
     getComponents() {
         let components = this.queryAst(
-            '[body]>[type=ExpressionStatement][expression.type=CallExpression][expression.callee.name=Polymer]'
+            '[body] [type=CallExpression][callee.name=Polymer]'
         );
         return components.map(a => new PolymerAst(a.getContents()));
     }
