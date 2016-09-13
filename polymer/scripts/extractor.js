@@ -4,9 +4,8 @@ class ModelExtractorChain {
     constructor() {
         this.extractors = [
             new ComponentNameExtractor(),
-            // new ComponentProptypesExtractor(),
-            // new ComponentDefaultPropsExtractor(),
-            // new ComponentFunctionsExtractor(),
+            new ComponentPropertiesExtractor(),
+            new ComponentFunctionsExtractor(),
             // new ComponentDependencyExtractor(),
             // new ComponentRenderPropsExtractor(),
             // new ComponentRenderStyleExtractor(),
@@ -92,94 +91,41 @@ class ComponentNameExtractor extends AbstractExtractor {
     }
 }
 
-// class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let propTypes = component.queryAst(
-//             '[key.name="propTypes"] > [properties] > [type]'
-//         );
+class ComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let properties = component.queryAst(
+            '[type=Property][key.type=Identifier][key.name=properties]>[properties]>[type=Property]'
+        );
 
-//         return propTypes
-//             .map(a => {
-//                 return {
-//                     name: a.getContents().key.name,
-//                     type: AstHelper.extractExpression(a.getContents().value)
-//                 };
-//             });
-//     }
-// }
+        return properties.map(a => {
 
-// class ComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let defValues = component.queryAst(
-//             '[type="FunctionExpression"][id.name="getDefaultProps"] [type="ReturnStatement"] [properties] [type="Property"]'
-//         );
+            let typeAst = a.querySingleAst('[type=Property][key.type=Identifier][key.name=type]');
+            let valueAst = a.querySingleAst('[type=Property][key.type=Identifier][key.name=value]');
 
-//         return defValues.map(a => {
-//             return {
-//                 name: a.getContents().key.name,
-//                 value: a.getContents().value.value // todo: extract expression should allow for methods
-//             };
-//         });
-//     }
-// }
+            return {
+                name: a.getContents().key.name,
+                type: typeAst ? AstHelper.extractExpression(typeAst.getContents().value) : undefined,
+                value: valueAst ? AstHelper.extractExpression(valueAst.getContents().value) : undefined,
+            }
+        });
+    }
+}
 
-// class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let funcs = component.queryAst(
-//             '[arguments] > [properties] > [value.type="FunctionExpression"]'
-//         );
 
-//         return funcs.map(a => {
-//             return {
-//                 name: a.getContents().value.id.name,
-//                 params: a.getContents().value.params.map(e => e.name)
-//             }
-//         });
-//     }
-// }
+class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let funcs = component.queryAst(
+            '[arguments]>[properties]>[type=Property][value.type=FunctionExpression]'
+        );
 
-// class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let reactCreateElementTags = component.queryAst(
-//             '[value.id.name="render"] [type="ReturnStatement"] [arguments] [type="Identifier"]:first-child'
-//         );
-
-//         return reactCreateElementTags.map(a => a.getContents().name);
-//     }
-// }
-
-// class ComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let props = component.queryAst(
-//             '[key.name="render"] [type="MemberExpression"][object.property.name="props"]'
-//         );
-
-//         return props.map(a => {
-//             return {name: a.getContents().property.name};
-//         });
-//     }
-// }
-
-// class ComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let styles = component.queryAst(
-//             '[type="FunctionExpression"][id.name="render"] [type="ObjectExpression"] [type="Property"][key.name="style"]'
-//         );
-
-//         return styles.map(a => {
-//             return a.getContents().value.value
-//                 .split(';')
-//                 .map(e => e.trim())
-//                 .filter(el => el !== '') // Remove empty string if ; was the last character
-//                 .map(el => {
-//                     return {
-//                         name: el.split(':')[0].trim(),
-//                         value: el.split(':')[1].trim(),
-//                     };
-//                 });
-//         });
-//     }
-// }
+        return funcs.map(a => {
+            return {
+                name: a.getContents().key.name,
+                params: a.getContents().value.params.map(e => e.name)
+            }
+        });
+    }
+}
 
 // class ComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtractor {
 //     extractFromComponent(component) {

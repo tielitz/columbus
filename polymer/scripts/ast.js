@@ -23,6 +23,20 @@ class Ast {
         let matches = esquery.match(this.value, selectorAst);
         return matches.map(a => new Ast(a));
     }
+
+    /**
+     * @param  {string} query
+     * @return {Ast}
+     */
+    querySingleAst(query) {
+        console.log('[QuerySingleAst] ', query);
+        let selectorAst = esquery.parse(query);
+        let matches = esquery.match(this.value, selectorAst);
+        if (matches.length > 0) {
+            return new Ast(matches[0]);
+        }
+        return null;
+    }
 }
 
 class ReactAst extends Ast {
