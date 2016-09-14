@@ -22,6 +22,9 @@ Polymer({
   created: function() {
     //
   },
+  ready: function () {
+    this.addEventLisener('myCustomEvent', this.sayHello);
+  },
   nameChangedValue: function(newValue, oldValue) {
     console.log('Variable name changed value');
   },
