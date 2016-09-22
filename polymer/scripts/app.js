@@ -98,10 +98,9 @@ var myElement = Polymer({
 
                 $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
 
-                // let modelGenerator = new ModelGenerator();
-                // let generatedModel = modelGenerator.generate(extractedInfoBase);
-
-                // $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
+                let modelGenerator = new ModelGenerator();
+                let generatedModel = modelGenerator.generate(extractedInfoBase);
+                $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
 
             } catch (err) {
                 console.log(err);

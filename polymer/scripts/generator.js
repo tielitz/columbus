@@ -169,69 +169,49 @@ class ModelGenerator {
         let componentModelContainer = new ComponentModelContainer();
 
         // Create structural dependencies and initial setup
-        for (let entry in informationBase.ComponentDependencyExtractor) {
+        for (let entry in informationBase.ComponentNameExtractor) {
             // iterate over the component dependencies
-            let componentModel = new ComponentModel(entry);
-            // informationBase.ComponentDependencyExtractor[entry].forEach(a => componentModel.addComponentDependency(a));
+            let componentModel = new ComponentModel(informationBase.ComponentNameExtractor[entry]);
             componentModelContainer.addComponentModel(componentModel);
         }
 
-        // Add parts
-        for (let entry in informationBase.ComponentRenderHtmlExtractor) {
+        // Lifecycle callbacks
+        for (let entry in informationBase.ComponentFunctionsExtractor) {
+            let lifecycleCallbacks = ['created', 'ready', 'attached', 'detached', 'attributeChanged'];
+
             let componentModel = componentModelContainer.getComponent(entry);
-            componentModel.addParts(this.convertToStructurPartsModel(
-                informationBase.ComponentRenderHtmlExtractor[entry],
-                componentModel
-            ));
-        }
 
-        // Add functions
-        // for (let entry in informationBase.ComponentFunctionsExtractor) {
-        //     let componentModel = componentModelContainer.getComponent(entry);
-        //     informationBase.ComponentFunctionsExtractor[entry].forEach(func => {
-
-        //         if (informationBase.ComponentFunctionReturnValueExtractor[entry][func.name] !== undefined) {
-        //             // the information base contains information about the return value
-        //             componentModel.addFunction(func.name, func.params, informationBase.ComponentFunctionReturnValueExtractor[entry][func.name])
-        //         } else {
-        //             componentModel.addFunction(func.name, func.params)
-        //         }
-        //     });
-        // }
-
-        // Behaviour rules
-        for (let entry in informationBase.ComponentRenderBehaviourExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-            // iterates over html elements
-            informationBase.ComponentRenderBehaviourExtractor[entry].forEach(entry => {
-
-                // each element can contain multiple events
-                entry.properties.forEach(event => {
-                    let behaviourRuleBuilder = new BehaviourRuleBuilder();
-                    let rule = behaviourRuleBuilder
-                        .setEvent(event.event, entry.element) // TODO: missing any form of id
-                        .addMethod(event.action.split('.')[0], event.action.split('.')[1], event.params)
-                        .create();
-                    componentModel.addBehaviourRule(rule);
-                });
+            informationBase.ComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name)).forEach(a => {
+                let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                let rule = behaviourRuleBuilder
+                    .setEvent(a.name, 'this')
+                    .addMethod('this', a.name)
+                    .create();
+                componentModel.addBehaviourRule(rule);
             });
         }
 
-        // Add variables
-        // Variables can be declared in ComponentProptypesExtractor || ComponentRenderPropsExtractor
-        for (let entry in informationBase.ComponentProptypesExtractor) {
+        // Listeners
+        for (let entry in informationBase.ComponentListenersExtractor) {
             let componentModel = componentModelContainer.getComponent(entry);
-            informationBase.ComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-            informationBase.ComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-            informationBase.ComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+
+            informationBase.ComponentListenersExtractor[entry].forEach(a => {
+
+                let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                let rule = behaviourRuleBuilder
+                    .setEvent(a.event, a.target)
+                    .addMethod('this', a.method)
+                    .create();
+                componentModel.addBehaviourRule(rule);
+            });
+
         }
 
-        // CSS Styles
-        // for (let entry in informationBase.ComponentRenderStyleExtractor) {
-        //     let componentModel = componentModelContainer.getComponent(entry);
-        //     informationBase.ComponentRenderStyleExtractor[entry].forEach(a => componentModel.addMultipleStyles(a));
-        // }
-
+        // Add variables
+        for (let entry in informationBase.ComponentPropertiesExtractor) {
+            let componentModel = componentModelContainer.getComponent(entry);
+            informationBase.ComponentPropertiesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+        }
 
         console.log('[ModelGenerator] model', componentModelContainer.toObject());
         return {components: componentModelContainer.toObject()};
