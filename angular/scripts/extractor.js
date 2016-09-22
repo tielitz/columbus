@@ -4,7 +4,8 @@ class ModelExtractorChain {
     constructor() {
         this.extractors = [
             new ComponentNameExtractor(),
-            // new ComponentPropertiesExtractor(),
+            new ComponentBindingsExtractor(),
+            new ComponentDependencyExtractor(),
             // new ComponentFunctionsExtractor(),
             // new ComponentListenersExtractor()
             // new ComponentDependencyExtractor(),
@@ -92,25 +93,44 @@ class ComponentNameExtractor extends AbstractExtractor {
     }
 }
 
-// class ComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let properties = component.queryAst(
-//             '[type=Property][key.type=Identifier][key.name=properties]>[properties]>[type=Property]'
-//         );
+class ComponentBindingsExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let properties = component.querySingleAst(
+            '[type=Property][key.name=bindings] [properties]'
+        );
 
-//         return properties.map(a => {
+        if (!properties) return;
 
-//             let typeAst = a.querySingleAst('[type=Property][key.type=Identifier][key.name=type]');
-//             let valueAst = a.querySingleAst('[type=Property][key.type=Identifier][key.name=value]');
+        return properties.getContents().properties.map(a => {
 
-//             return {
-//                 name: a.getContents().key.name,
-//                 type: typeAst ? AstHelper.extractExpression(typeAst.getContents().value) : undefined,
-//                 value: valueAst ? AstHelper.extractExpression(valueAst.getContents().value) : undefined,
-//             }
-//         });
-//     }
-// }
+            return {
+                name: a.key.name,
+                type: undefined,
+                value: undefined,
+                binding: a.value.value === '<' ? 'one-way' : a.value.value === '&' ? 'out' : undefined
+            };
+        });
+    }
+}
+
+class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let dependencies = component.querySingleAst(
+            '[type=Property][key.name=require] [properties]'
+        );
+
+        if (!dependencies) return;
+
+        return dependencies.getContents().properties.map(a => {
+            return {
+                localName: a.key.name,
+                target: a.value.value
+            };
+        });
+    }
+}
+
+
 
 
 // class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {

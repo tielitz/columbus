@@ -14,6 +14,9 @@ var app = angular.module('plunker', []);
 
 app.component('appClass', {
   bindings: {},
+  require: {
+    tabsCtrl: '^myTabs'
+  },
   controller: function() {
     this.$onInit = function () {
       this.name = 'Andreas';
@@ -25,6 +28,68 @@ app.component('appClass', {
     }
   },
   template: '<hello-world ng-if="toggle" name="{{$ctrl.name}}"></hello-world><button ng-click=$ctrl.foo()>a</button></div><br><button ng-click="toggle = !toggle">Toggle</button>'
+});
+
+app.component('helloWorld', {
+  bindings: {
+    name: '@',
+    oneWay: '<',
+    // < one-way input
+    // @ immutable strings
+    // & output
+  },
+  controller: function ($scope) {
+
+    this.sayHello = function (){
+      return 'Hello';
+    },
+    this.$onInit = function () {
+      console.log('onInit');
+    },
+    this.$onInit = function () {
+      console.log('onInit');
+    }
+    this.$onChanges = function (changesObj) {
+      console.log('$onChanges', changesObj);
+    }
+  },
+  template: '<div>{{ $ctrl.sayHello() }}, {{ $ctrl.name }}!'
+  // templateUrl: 'heroDetail.html',
+});
+
+// #########
+
+function HeroDetailController() {
+  var ctrl = this;
+
+  ctrl.list = [
+    {
+      name: 'Superman',
+      location: ''
+    },
+    {
+      name: 'Batman',
+      location: 'Wayne Manor'
+    }
+  ];
+
+  ctrl.delete = function() {
+    ctrl.onDelete({hero: ctrl.hero});
+  };
+
+  ctrl.update = function(prop, value) {
+    ctrl.onUpdate({hero: ctrl.hero, prop: prop, value: value});
+  };
+}
+
+angular.module('heroApp').component('heroDetail', {
+  templateUrl: 'heroDetail.html',
+  controller: HeroDetailController,
+  bindings: {
+    hero: '<',
+    onDelete: '&',
+    onUpdate: '&'
+  }
 });
     `;
 
