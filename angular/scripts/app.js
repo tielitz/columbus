@@ -20,12 +20,12 @@ app.component('appClass', {
   controller: function() {
     this.$onInit = function () {
       this.name = 'Andreas';
-    }
-    this.foo = function () {
+    };
+    this.foo = function (param1, param2) {
       console.log('foo');
       this.name = 'foo';
       this.oneWay = 'b';
-    }
+    };
   },
   template: '<hello-world ng-if="toggle" name="{{$ctrl.name}}"></hello-world><button ng-click=$ctrl.foo()>a</button></div><br><button ng-click="toggle = !toggle">Toggle</button>'
 });
@@ -42,16 +42,16 @@ app.component('helloWorld', {
 
     this.sayHello = function (){
       return 'Hello';
-    },
+    };
     this.$onInit = function () {
       console.log('onInit');
-    },
+    };
     this.$onInit = function () {
       console.log('onInit');
-    }
+    };
     this.$onChanges = function (changesObj) {
       console.log('$onChanges', changesObj);
-    }
+    };
   },
   template: '<div>{{ $ctrl.sayHello() }}, {{ $ctrl.name }}!'
   // templateUrl: 'heroDetail.html',

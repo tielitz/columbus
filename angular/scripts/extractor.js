@@ -6,7 +6,7 @@ class ModelExtractorChain {
             new ComponentNameExtractor(),
             new ComponentBindingsExtractor(),
             new ComponentDependencyExtractor(),
-            // new ComponentFunctionsExtractor(),
+            new ComponentFunctionsExtractor()
             // new ComponentListenersExtractor()
             // new ComponentDependencyExtractor(),
             // new ComponentRenderPropsExtractor(),
@@ -133,20 +133,36 @@ class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
 
 
 
-// class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
-//     extractFromComponent(component) {
-//         let funcs = component.queryAst(
-//             '[arguments]>[properties]>[type=Property][value.type=FunctionExpression]'
-//         );
+class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
 
-//         return funcs.map(a => {
-//             return {
-//                 name: a.getContents().key.name,
-//                 params: a.getContents().value.params.map(e => e.name)
-//             }
-//         });
-//     }
-// }
+        // Step 1: try to find the controller function
+
+        // 1.a) Controller function inline
+        let controllerFunction = component.querySingleAst(
+            '[type=Property][key.name=controller][value.type=FunctionExpression]>[body]'
+        );
+
+        // 1.b) Controller property references function
+        // TODO
+
+        if (!controllerFunction) {
+            return undefined;
+        }
+
+        let funcs = controllerFunction.queryAst(
+            '[body]>[type=ExpressionStatement][expression.right.type=FunctionExpression]'
+        );
+
+        return funcs.map(a => {
+            let params = a.getContents().expression.right.params.map(b => b.name);
+            return {
+                name: a.getContents().expression.left.property.name,
+                params: params.length > 0 ? params : undefined
+            };
+        });
+    }
+}
 
 // class ComponentListenersExtractor extends AbstractComponentBasedExtractor {
 //     extractFromComponent(component) {
