@@ -59,7 +59,9 @@ app.component('helloWorld', {
 
 // #########
 
-function HeroDetailController() {
+angular.module('heroApp').component('heroDetail', {
+  templateUrl: 'heroDetail.html',
+  controller: function () {
   var ctrl = this;
 
   ctrl.list = [
@@ -80,11 +82,7 @@ function HeroDetailController() {
   ctrl.update = function(prop, value) {
     ctrl.onUpdate({hero: ctrl.hero, prop: prop, value: value});
   };
-}
-
-angular.module('heroApp').component('heroDetail', {
-  templateUrl: 'heroDetail.html',
-  controller: HeroDetailController,
+},
   bindings: {
     hero: '<',
     onDelete: '&',

@@ -94,6 +94,18 @@ class AstHelper {
             return this.extractExpression(expr.callee) + '()';
         }
 
+        if (type === 'ArrayExpression') {
+            return expr.elements.map(a => this.extractExpression(a));
+        }
+
+        if (type === 'ObjectExpression') {
+            let foo = {};
+            expr.properties.forEach(a => {
+                return foo[this.extractExpression(a.key)] = this.extractExpression(a.value)
+            });
+            return foo;
+        }
+
         return null;
     }
 
