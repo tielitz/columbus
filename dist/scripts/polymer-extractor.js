@@ -1,12 +1,12 @@
 'use strict';
 
-class ModelExtractorChain {
+class PolymerModelExtractorChain {
     constructor() {
         this.extractors = [
-            new ComponentNameExtractor(),
-            new ComponentPropertiesExtractor(),
-            new ComponentFunctionsExtractor(),
-            new ComponentListenersExtractor()
+            new PolymerComponentNameExtractor(),
+            new PolymerComponentPropertiesExtractor(),
+            new PolymerComponentFunctionsExtractor(),
+            new PolymerComponentListenersExtractor()
             // new ComponentDependencyExtractor(),
             // new ComponentRenderPropsExtractor(),
             // new ComponentRenderStyleExtractor(),
@@ -14,7 +14,7 @@ class ModelExtractorChain {
             // new ComponentRenderHtmlExtractor(),
             // new ComponentRenderBehaviourExtractor()
         ];
-        console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
+        console.log('[PolymerModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
 
     /**
@@ -38,61 +38,14 @@ class ModelExtractorChain {
 // ########################################################################
 // ########################################################################
 
-class AbstractExtractor {
-
-    /**
-     * Descriptor that is used in the model json as an identifier
-     * @return {string}
-     */
-    descriptor() {
-        return this.constructor.name;
-    }
-
-    /**
-     * @param  {Ast}    input
-     * @return {object}
-     */
-    extract(input) {
-        return undefined;
-    }
-
-    printDebug(val) {
-        if (val instanceof Array) {
-            val.forEach(a => console.log(JSON.stringify(a, null, '\t')));
-        } else {
-            console.log(JSON.stringify(val, null, '\t'));
-        }
-    }
-}
-
-class AbstractComponentBasedExtractor extends AbstractExtractor {
-    extract(input) {
-        let components = input.getComponents();
-        let output = {};
-
-        for (let component of components) {
-            output[component.getName()] = this.extractFromComponent(component);
-        }
-
-        return output;
-    }
-
-    extractFromComponent(component) {
-        return undefined;
-    }
-}
-
-// ########################################################################
-// ########################################################################
-
-class ComponentNameExtractor extends AbstractExtractor {
+class PolymerComponentNameExtractor extends AbstractExtractor {
     extract(input) {
         let components = input.getComponents();
         return components.map(a => a.getName());
     }
 }
 
-class ComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
+class PolymerComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let properties = component.queryAst(
             '[type=Property][key.type=Identifier][key.name=properties]>[properties]>[type=Property]'
@@ -113,7 +66,7 @@ class ComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
 }
 
 
-class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+class PolymerComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
             '[arguments]>[properties]>[type=Property][value.type=FunctionExpression]'
@@ -128,7 +81,7 @@ class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentListenersExtractor extends AbstractComponentBasedExtractor {
+class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let listeners = component.queryAst(
             '[type=Property][key.type=Identifier][key.name=listeners]>[properties]>[type=Property]'

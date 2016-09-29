@@ -23,6 +23,20 @@ class Ast {
         let matches = esquery.match(this.value, selectorAst);
         return matches.map(a => new Ast(a));
     }
+
+    /**
+     * @param  {string} query
+     * @return {Ast}
+     */
+    querySingleAst(query) {
+        console.log('[QuerySingleAst] ', query);
+        let selectorAst = esquery.parse(query);
+        let matches = esquery.match(this.value, selectorAst);
+        if (matches.length > 0) {
+            return new Ast(matches[0]);
+        }
+        return null;
+    }
 }
 
 class ReactAst extends Ast {
@@ -33,7 +47,42 @@ class ReactAst extends Ast {
         return components.filter(a => {
             return a.getContents().init.callee.object.name === 'React'
                     && a.getContents().init.callee.property.name === 'createClass'
-        });
+        }).map(a => new ReactAst(a.getContents()));
+    }
+    getName() {
+        return this.getContents().id.name;
+    }
+}
+
+class PolymerAst extends Ast {
+    getComponents() {
+        let components = this.queryAst(
+            '[body] [type=CallExpression][callee.name=Polymer]'
+        );
+        return components.map(a => new PolymerAst(a.getContents()));
+    }
+    getName() {
+        console.log('[PolymerAst] getName', this.getContents());
+        let name = this.queryAst(
+            '[type=Property][key.type=Identifier][key.name=is]'
+        );
+        return name[0].getContents().value.value;
+    }
+}
+
+class AngularAst extends Ast {
+    getComponents() {
+        let components = this.queryAst(
+            '[type="ExpressionStatement"] [callee.property.name=component]'
+        );
+        return components.map(a => new AngularAst(a.getContents()));
+    }
+    getName() {
+        console.log('[AngularAst] getName', this.getContents());
+        let name = this.querySingleAst(
+            '[arguments] :first-child'
+        );
+        return name.getContents().value;
     }
 }
 
@@ -59,6 +108,18 @@ class AstHelper {
 
         if (type === 'CallExpression') {
             return this.extractExpression(expr.callee) + '()';
+        }
+
+        if (type === 'ArrayExpression') {
+            return expr.elements.map(a => this.extractExpression(a));
+        }
+
+        if (type === 'ObjectExpression') {
+            let foo = {};
+            expr.properties.forEach(a => {
+                return foo[this.extractExpression(a.key)] = this.extractExpression(a.value)
+            });
+            return foo;
         }
 
         return null;

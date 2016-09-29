@@ -35,7 +35,7 @@
 <md-toolbar>
     <div class="md-toolbar-tools" md-whiteframe="3">
         <div class="md-toolbar-item">
-            <span class="md-headline">Columbus for Polymer</span>
+            <span class="md-headline">Columbus for {{ framework }}</span>
         </div>
     </div>
 </md-toolbar>
@@ -49,9 +49,17 @@
               </md-card-title-text>
             </md-card-title>
             <md-card-content>
+                <md-button ng-click="fillDummy()">Fill with dummy code</md-button>
                 <editor type='javascript' content="jsContent"></editor>
             </md-card-content>
             <md-card-actions layout="row" layout-align="end center">
+                <md-input-container>
+                    <md-select ng-model="framework" placeholder="Select a framework">
+                        <md-option>React</md-option>
+                        <md-option>Polymer</md-option>
+                        <md-option>Angular</md-option>
+                    </md-select>
+                </md-input-container>
                 <md-button class="md-raised" ng-click="extractModel()">Extract model</md-button>
             </md-card-actions>
         </md-card>
@@ -82,12 +90,12 @@
                             <editor type='json' content="infoBaseContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
-                    <!-- <md-tab id="model">
+                    <md-tab id="model" ng-if="framework == 'React'">
                         <md-tab-label>Dependencies</md-tab-label>
                         <md-tab-body>
                             <dependency-graph content="infoBaseContent" width=660 height=700></dependency-graph>
                         </md-tab-body>
-                    </md-tab> -->
+                    </md-tab>
                     <md-tab id="infobase">
                         <md-tab-label>Model</md-tab-label>
                         <md-tab-body>
@@ -127,8 +135,20 @@
 <script src="scripts/ast.js"></script>
 <script src="scripts/uiml.js"></script>
 <script src="scripts/parser.js"></script>
-<script src="scripts/extractor.js"></script>
-<script src="scripts/generator.js"></script>
+<script src="scripts/fill-dummy.js"></script>
+
+<script src="scripts/shared-extractor.js"></script>
+<script src="scripts/shared-generator.js"></script>
+
+<script src="scripts/react-extractor.js"></script>
+<script src="scripts/react-generator.js"></script>
+
+<script src="scripts/polymer-extractor.js"></script>
+<script src="scripts/polymer-generator.js"></script>
+
+<script src="scripts/angular-extractor.js"></script>
+<script src="scripts/angular-generator.js"></script>
+
 <script src="scripts/app.js"></script>
 
 

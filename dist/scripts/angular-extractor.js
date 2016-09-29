@@ -1,22 +1,22 @@
 'use strict';
 
-class ModelExtractorChain {
+class AngularModelExtractorChain {
     constructor() {
         this.extractors = [
-            new ComponentNameExtractor(),
-            new ComponentBindingsExtractor(),
-            new ComponentDependencyExtractor(),
-            new ComponentFunctionsExtractor(),
-            new ComponentPropertiesExtractor()
+            new AngularComponentNameExtractor(),
+            new AngularComponentBindingsExtractor(),
+            new AngularComponentDependencyExtractor(),
+            new AngularComponentFunctionsExtractor(),
+            new AngularComponentPropertiesExtractor()
             // new ComponentListenersExtractor()
-            // new ComponentDependencyExtractor(),
+            // new AngularComponentDependencyExtractor(),
             // new ComponentRenderPropsExtractor(),
             // new ComponentRenderStyleExtractor(),
             // new ComponentFunctionReturnValueExtractor(),
             // new ComponentRenderHtmlExtractor(),
             // new ComponentRenderBehaviourExtractor()
         ];
-        console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
+        console.log('[AngularModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
 
     /**
@@ -40,61 +40,14 @@ class ModelExtractorChain {
 // ########################################################################
 // ########################################################################
 
-class AbstractExtractor {
-
-    /**
-     * Descriptor that is used in the model json as an identifier
-     * @return {string}
-     */
-    descriptor() {
-        return this.constructor.name;
-    }
-
-    /**
-     * @param  {Ast}    input
-     * @return {object}
-     */
-    extract(input) {
-        return undefined;
-    }
-
-    printDebug(val) {
-        if (val instanceof Array) {
-            val.forEach(a => console.log(JSON.stringify(a, null, '\t')));
-        } else {
-            console.log(JSON.stringify(val, null, '\t'));
-        }
-    }
-}
-
-class AbstractComponentBasedExtractor extends AbstractExtractor {
-    extract(input) {
-        let components = input.getComponents();
-        let output = {};
-
-        for (let component of components) {
-            output[component.getName()] = this.extractFromComponent(component);
-        }
-
-        return output;
-    }
-
-    extractFromComponent(component) {
-        return undefined;
-    }
-}
-
-// ########################################################################
-// ########################################################################
-
-class ComponentNameExtractor extends AbstractExtractor {
+class AngularComponentNameExtractor extends AbstractExtractor {
     extract(input) {
         let components = input.getComponents();
         return components.map(a => a.getName());
     }
 }
 
-class ComponentBindingsExtractor extends AbstractComponentBasedExtractor {
+class AngularComponentBindingsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let properties = component.querySingleAst(
             '[type=Property][key.name=bindings] [properties]'
@@ -114,7 +67,7 @@ class ComponentBindingsExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
+class AngularComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let dependencies = component.querySingleAst(
             '[type=Property][key.name=require] [properties]'
@@ -132,7 +85,7 @@ class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
 }
 
 
-class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+class AngularComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
 
         // Step 1: try to find the controller function
@@ -163,7 +116,7 @@ class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
+class AngularComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
 
         // Step 1: try to find the controller function

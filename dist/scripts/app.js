@@ -10,115 +10,120 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.jsContent = `
 'use strict';
 
-var app = angular.module('plunker', []);
-
-app.component('appClass', {
-  bindings: {},
-  require: {
-    tabsCtrl: '^myTabs'
+var HelloWorld = React.createClass({
+  propTypes: {
+    asdf: React.PropTypes.string
   },
-  controller: function() {
-    this.$onInit = function () {
-      this.name = 'Andreas';
-    };
-    this.foo = function (param1, param2) {
-      console.log('foo');
-      this.name = 'foo';
-      this.oneWay = 'b';
-    };
+  sayGreeting: function () {
+    return 'Hello';
   },
-  template: '<hello-world ng-if="toggle" name="{{$ctrl.name}}"></hello-world><button ng-click=$ctrl.foo()>a</button></div><br><button ng-click="toggle = !toggle">Toggle</button>'
+  render: function() {
+    return (
+        <div>
+          {this.sayGreeting()}, {this.props.asdf}!
+          <HelloWorld><Child /></HelloWorld>
+        </div>
+      );
+  }
 });
 
-app.component('helloWorld', {
-  bindings: {
-    name: '@',
-    oneWay: '<',
-    // < one-way input
-    // @ immutable strings
-    // & output
-  },
-  controller: function ($scope) {
+var AdvancedHelloWorld = React.createClass({
+  displayName: 'AdvancedHelloWorld',
 
-    this.sayHello = function (){
-      return 'Hello';
-    };
-    this.$onInit = function () {
-      console.log('onInit');
-    };
-    this.$onInit = function () {
-      console.log('onInit');
-    };
-    this.$onChanges = function (changesObj) {
-      console.log('$onChanges', changesObj);
+  propTypes: {
+    greeting: React.PropTypes.bool,
+    name: React.PropTypes.string
+  },
+  getDefaultProps: function getDefaultProps() {
+    return {
+      greeting: true,
+      name: 'Dummy'
     };
   },
-  template: '<div>{{ $ctrl.sayHello() }}, {{ $ctrl.name }}!'
-  // templateUrl: 'heroDetail.html',
-});
+  sayHello: function sayHello(param1, param2) {
+    return 'Hello';
+  },
+  shouldGreet: function shouldGreet(param3) {
+    return this.props.greeting;
+  },
 
-// #########
-
-angular.module('heroApp').component('heroDetail', {
-  templateUrl: 'heroDetail.html',
-  controller: function () {
-  var ctrl = this;
-
-  ctrl.list = [
-    {
-      name: 'Superman',
-      location: ''
-    },
-    {
-      name: 'Batman',
-      location: 'Wayne Manor'
-    }
-  ];
-
-  ctrl.delete = function() {
-    ctrl.onDelete({hero: ctrl.hero});
-  };
-
-  ctrl.update = function(prop, value) {
-    ctrl.onUpdate({hero: ctrl.hero, prop: prop, value: value});
-  };
-},
-  bindings: {
-    hero: '<',
-    onDelete: '&',
-    onUpdate: '&'
+  render: function render() {
+    return (
+        <div style="color: #000;font-weight:bold;">
+        <div id="header" onClick={this.sayHello(foo, this.foo(2), 2)}>
+          <img src="" />
+        </div>
+        <div id="body">
+          <p>{this.shouldGreet() ? this.sayHello() : ''} <i>{this.props.name}</i>!</p>
+        </div>
+        <HelloWorld name="Second" />
+        <SecondComponent />
+      </div>
+    );
   }
 });
     `;
+
 
         $scope.syntaxContent = '';
         $scope.tokensContent = '';
         $scope.infoBaseContent  = '';
         $scope.modelContent = '';
+        $scope.framework = 'React';
 
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
 
             try {
 
-                let jsxParser = new JsxParser();
                 let astParser = new AstParser($window.esprima);
 
+                let ast = null;
+                let parsedSourceCode = null;
 
-                let parsedJsxCode = jsxParser.transform($scope.jsContent);
-                let ast = astParser.parseAngular(parsedJsxCode);
+                let modelExtractorChain = null;
+                let modelGenerator = null;
+
+                switch ($scope.framework) {
+                    case 'React':
+                        let jsxParser = new JsxParser();
+                        parsedSourceCode = jsxParser.transform($scope.jsContent);
+                        ast = astParser.parseReact(parsedSourceCode);
+
+                        modelExtractorChain = new ReactModelExtractorChain();
+                        modelGenerator = new ReactModelGenerator();
+
+                        break;
+
+                    case 'Polymer':
+                        parsedSourceCode = $scope.jsContent;
+                        ast = astParser.parsePolymer(parsedSourceCode);
+
+                        modelExtractorChain = new PolymerModelExtractorChain();
+                        modelGenerator = new PolymerModelGenerator();
+
+                        break;
+
+                    case 'Angular':
+                        parsedSourceCode = $scope.jsContent;
+                        ast = astParser.parseAngular(parsedSourceCode);
+
+                        modelExtractorChain = new AngularModelExtractorChain();
+                        modelGenerator = new AngularModelGenerator();
+
+                        break;
+                }
 
                 $scope.syntaxContent = ast.asJson();
-                $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedJsxCode), null, '\t');
+                $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedSourceCode), null, '\t');
 
-                let modelExtractorChain = new ModelExtractorChain();
                 let extractedInfoBase = modelExtractorChain.apply(ast);
 
                 $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
 
-                // let modelGenerator = new ModelGenerator();
-                // let generatedModel = modelGenerator.generate(extractedInfoBase);
-                // $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
+                let generatedModel = modelGenerator.generate(extractedInfoBase);
+
+                $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
 
             } catch (err) {
                 console.log(err);
@@ -127,6 +132,9 @@ angular.module('heroApp').component('heroDetail', {
             }
         }
 
+        $scope.fillDummy = function fillDummy() {
+            $scope.jsContent = DummyCodeGenerator.generate($scope.framework);
+        }
 
     })
     .directive('editor', ['$window','$timeout', function ($window,$timeout) {
@@ -227,7 +235,7 @@ angular.module('heroApp').component('heroDetail', {
                         return;
                     }
 
-                    let dependencyGraph = JSON.parse(newValue).ComponentDependencyExtractor;
+                    let dependencyGraph = JSON.parse(newValue).ReactComponentDependencyExtractor;
                     console.log('[DependencyGraph] redraw with val', dependencyGraph);
 
                     let nodes = Object.keys(dependencyGraph).map(a => {

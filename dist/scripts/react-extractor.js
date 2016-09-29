@@ -1,20 +1,20 @@
 'use strict';
 
-class ModelExtractorChain {
+class ReactModelExtractorChain {
     constructor() {
         this.extractors = [
-            new ComponentNameExtractor(),
-            new ComponentProptypesExtractor(),
-            new ComponentDefaultPropsExtractor(),
-            new ComponentFunctionsExtractor(),
-            new ComponentDependencyExtractor(),
-            new ComponentRenderPropsExtractor(),
-            new ComponentRenderStyleExtractor(),
-            new ComponentFunctionReturnValueExtractor(),
-            new ComponentRenderHtmlExtractor(),
-            new ComponentRenderBehaviourExtractor()
+            new ReactComponentNameExtractor(),
+            new ReactComponentProptypesExtractor(),
+            new ReactComponentDefaultPropsExtractor(),
+            new ReactComponentFunctionsExtractor(),
+            new ReactComponentDependencyExtractor(),
+            new ReactComponentRenderPropsExtractor(),
+            new ReactComponentRenderStyleExtractor(),
+            new ReactComponentFunctionReturnValueExtractor(),
+            new ReactComponentRenderHtmlExtractor(),
+            new ReactComponentRenderBehaviourExtractor()
         ];
-        console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
+        console.log('[ReactModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
 
     /**
@@ -38,61 +38,14 @@ class ModelExtractorChain {
 // ########################################################################
 // ########################################################################
 
-class AbstractExtractor {
-
-    /**
-     * Descriptor that is used in the model json as an identifier
-     * @return {string}
-     */
-    descriptor() {
-        return this.constructor.name;
-    }
-
-    /**
-     * @param  {Ast}    input
-     * @return {object}
-     */
-    extract(input) {
-        return undefined;
-    }
-
-    printDebug(val) {
-        if (val instanceof Array) {
-            val.forEach(a => console.log(JSON.stringify(a, null, '\t')));
-        } else {
-            console.log(JSON.stringify(val, null, '\t'));
-        }
-    }
-}
-
-class AbstractComponentBasedExtractor extends AbstractExtractor {
-    extract(input) {
-        let components = input.getComponents();
-        let output = {};
-
-        for (let component of components) {
-            output[component.getContents().id.name] = this.extractFromComponent(component);
-        }
-
-        return output;
-    }
-
-    extractFromComponent(component) {
-        return undefined;
-    }
-}
-
-// ########################################################################
-// ########################################################################
-
-class ComponentNameExtractor extends AbstractExtractor {
+class ReactComponentNameExtractor extends AbstractExtractor {
     extract(input) {
         let components = input.getComponents();
         return components.map(a => a.getContents().id.name);
     }
 }
 
-class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentProptypesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let propTypes = component.queryAst(
             '[key.name="propTypes"] > [properties] > [type]'
@@ -108,7 +61,7 @@ class ComponentProptypesExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let defValues = component.queryAst(
             '[type="FunctionExpression"][id.name="getDefaultProps"] [type="ReturnStatement"] [properties] [type="Property"]'
@@ -123,7 +76,7 @@ class ComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
             '[arguments] > [properties] > [value.type="FunctionExpression"]'
@@ -138,7 +91,7 @@ class ComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let reactCreateElementTags = component.queryAst(
             '[value.id.name="render"] [type="ReturnStatement"] [arguments] [type="Identifier"]:first-child'
@@ -148,7 +101,7 @@ class ComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let props = component.queryAst(
             '[key.name="render"] [type="MemberExpression"][object.property.name="props"]'
@@ -160,7 +113,7 @@ class ComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let styles = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ObjectExpression"] [type="Property"][key.name="style"]'
@@ -181,7 +134,7 @@ class ComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let functions = component.queryAst(
             '[type="FunctionExpression"]'
@@ -215,14 +168,14 @@ class ComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtrac
             });
         }
 
-        console.log('[ComponentFunctionReturnValueExtractor] return statements ', extractedFunctionReturns);
+        console.log('[ReactComponentFunctionReturnValueExtractor] return statements ', extractedFunctionReturns);
 
         return extractedFunctionReturns;
     }
 }
 
 // Limiting  extractor to first return statement
-class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let renderReturnStatements = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"]:first-child'
@@ -238,7 +191,7 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
 
     parseCreateElement(content) {
 
-        console.log('[ComponentRenderHtmlExtractor] parseCreateElement', content);
+        console.log('[ReactComponentRenderHtmlExtractor] parseCreateElement', content);
 
         // element 0 contains key
         // element 1 contains tags for the key
@@ -294,7 +247,7 @@ class ComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
-class ComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor {
+class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let callExpressions = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"] [type="CallExpression"]'
