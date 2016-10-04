@@ -39,3 +39,12 @@ class JsxParser {
         return transformed.code;
     }
 }
+
+class BabelParser {
+    transform(code) {
+        let transformed = Babel.transform(code, {
+            presets: ['es2015']
+        });
+        return transformed.code;
+    }
+}

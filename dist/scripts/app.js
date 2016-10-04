@@ -77,6 +77,7 @@ var AdvancedHelloWorld = React.createClass({
             try {
 
                 let astParser = new AstParser($window.esprima);
+                let babelParser = null;
 
                 let ast = null;
                 let parsedSourceCode = null;
@@ -86,8 +87,8 @@ var AdvancedHelloWorld = React.createClass({
 
                 switch ($scope.framework) {
                     case 'React':
-                        let jsxParser = new JsxParser();
-                        parsedSourceCode = jsxParser.transform($scope.jsContent);
+                        babelParser = new JsxParser();
+                        parsedSourceCode = babelParser.transform($scope.jsContent);
                         ast = astParser.parseReact(parsedSourceCode);
 
                         modelExtractorChain = new ReactModelExtractorChain();
@@ -96,7 +97,8 @@ var AdvancedHelloWorld = React.createClass({
                         break;
 
                     case 'Polymer':
-                        parsedSourceCode = $scope.jsContent;
+                        babelParser = new BabelParser();
+                        parsedSourceCode = babelParser.transform($scope.jsContent);
                         ast = astParser.parsePolymer(parsedSourceCode);
 
                         modelExtractorChain = new PolymerModelExtractorChain();
@@ -105,7 +107,8 @@ var AdvancedHelloWorld = React.createClass({
                         break;
 
                     case 'Angular':
-                        parsedSourceCode = $scope.jsContent;
+                        babelParser = new BabelParser();
+                        parsedSourceCode = babelParser.transform($scope.jsContent);
                         ast = astParser.parseAngular(parsedSourceCode);
 
                         modelExtractorChain = new AngularModelExtractorChain();
