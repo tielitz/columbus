@@ -55,7 +55,11 @@ class ComponentModel {
     }
 
     addParts(parts) {
-        this.structure.parts = parts;
+        if (this.structure.parts === undefined) {
+            this.structure.parts = [];
+        }
+
+        this.structure.parts.push(parts);
     }
 
     addVariable(name, type, value) {

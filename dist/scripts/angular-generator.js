@@ -28,26 +28,27 @@ class AngularModelGenerator {
             });
         }
 
-        // Listeners
-        for (let entry in informationBase.ComponentListenersExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-
-            informationBase.ComponentListenersExtractor[entry].forEach(a => {
-
-                let behaviourRuleBuilder = new BehaviourRuleBuilder();
-                let rule = behaviourRuleBuilder
-                    .setEvent(a.event, a.target)
-                    .addMethod('this', a.method)
-                    .create();
-                componentModel.addBehaviourRule(rule);
-            });
-
-        }
-
         // Add variables
         for (let entry in informationBase.AngularComponentPropertiesExtractor) {
             let componentModel = componentModelContainer.getComponent(entry);
             informationBase.AngularComponentPropertiesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+        }
+
+        // Structure dependencies
+        for (let entry in informationBase.AngularComponentDependencyExtractor) {
+            let componentModel = componentModelContainer.getComponent(entry);
+
+            if (informationBase.AngularComponentDependencyExtractor[entry]) {
+                // we have dependencies
+                informationBase.AngularComponentDependencyExtractor[entry].forEach(a => {
+                    // this component depends on a.target component
+                    let dependency = {
+                        _entity: 'reference',
+                        id: a.target.replace('^', '')
+                    };
+                    componentModel.addParts(dependency);
+                });
+            }
         }
 
         console.log('[AngularModelGenerator] model', componentModelContainer.toObject());
