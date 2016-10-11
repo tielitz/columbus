@@ -1,7 +1,76 @@
 'use strict';
 
 angular.module('columbusApp', ['ngMaterial'])
-    .controller('AppCtrl', function($scope,$window) {
+    .factory('githubEndpoint', ['$http', '$q', function ($http, $q) {
+        return {
+            getTreeRecursively: function getTreeRecursively(owner, repo, sha) {
+                let url = 'https://api.github.com/repos/'+owner+'/'+repo+'/git/trees/'+sha+'?recursive=1';
+                console.log('[getTreeRecursively]', owner, repo, sha, url);
+
+                var deferred = $q.defer();
+
+                $http({
+                    method: 'GET',
+                    url: url,
+                    headers: {
+                        'Authorization': 'token 18c2edbf6816fcad281d62ea52a70a11a422ae40'
+                    }
+                }).then(function successCallback(response) {
+                    console.log('[getTreeRecursively] successCallback', response);
+
+                    let githubRepositoryContainer = new GithubRepositoryContainer(response.data);
+                    let treeEntries =githubRepositoryContainer.getAllEntries();
+
+                    var subDeferreds = [];
+
+                    for (let i = 0; i < treeEntries.length; i++) {
+                        let entry = treeEntries[i];
+                        subDeferreds.push(fetchSource(owner, repo, entry.path));
+                    }
+
+                    $q.all(subDeferreds).then(function (data) {
+                        data.forEach(a => {
+                            githubRepositoryContainer.addSourceForPath(a.path, a.content);
+                        });
+                        deferred.resolve(githubRepositoryContainer);
+                    });
+                }, function errorCallback(response) {
+                    console.log('[getTreeRecursively] errorCallback', response);
+                    deferred.reject();
+                });
+
+                return deferred.promise;
+            },
+            fetchSource: fetchSource
+        };
+        function fetchSource(owner, repo, path) {
+            let url = 'https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+path;
+            console.log('[fetchSource]', url);
+
+            let deferred = $q.defer();
+
+            $http({
+                method: 'GET',
+                url: url,
+                data: '',
+                headers: {
+                    'Content-Type': 'application/vnd.github.v3.raw',
+                    'Authorization': 'token 18c2edbf6816fcad281d62ea52a70a11a422ae40'
+                }
+            }).then(function successCallback(response) {
+                deferred.resolve({
+                    path: path,
+                    content: atob(response.data.content)
+                });
+            }, function errorCallback(response) {
+                console.log('Could not fetch source', url, response);
+                deferred.reject();
+            });
+
+            return deferred.promise;
+        }
+    }])
+    .controller('AppCtrl', function($scope, $window, githubEndpoint) {
 
         if (angular.isUndefined($window.esprima)) {
             throw new Error('This Application depends on Esprima library - http://esprima.org/');
@@ -71,6 +140,8 @@ var AdvancedHelloWorld = React.createClass({
         $scope.modelContent = '';
         $scope.framework = 'React';
 
+        $scope.githubUrl = '';
+
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
 
@@ -137,6 +208,15 @@ var AdvancedHelloWorld = React.createClass({
 
         $scope.fillDummy = function fillDummy() {
             $scope.jsContent = DummyCodeGenerator.generate($scope.framework);
+        }
+
+        $scope.parseGithub = function parseGithub() {
+            console.log('[parseGithub] with URL ' + $scope.githubUrl);
+            let githubRepositoryContainer = null;
+
+            githubEndpoint.getTreeRecursively('tielitz', 'columbus', 'ee4d5a6').then(function (container) {
+                console.log('[parseGithub] finished parsing', container);
+            });
         }
 
     })
