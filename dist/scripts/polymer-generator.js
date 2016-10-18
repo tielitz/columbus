@@ -6,48 +6,53 @@ class PolymerModelGenerator {
         let componentModelContainer = new ComponentModelContainer();
 
         // Create structural dependencies and initial setup
-        for (let entry in informationBase.PolymerComponentNameExtractor) {
-            // iterate over the component dependencies
-            let componentModel = new ComponentModel(informationBase.PolymerComponentNameExtractor[entry]);
-            componentModelContainer.addComponentModel(componentModel);
+        for (let fileEntry in informationBase) {
+            for (let entry in informationBase[fileEntry].PolymerComponentNameExtractor) {
+                // iterate over the component dependencies
+                let componentModel = new ComponentModel(informationBase[fileEntry].PolymerComponentNameExtractor[entry]);
+                componentModelContainer.addComponentModel(componentModel);
+            }
         }
 
-        // Lifecycle callbacks
-        for (let entry in informationBase.PolymerComponentFunctionsExtractor) {
-            let lifecycleCallbacks = ['created', 'ready', 'attached', 'detached', 'attributeChanged'];
+        for (let fileEntry in informationBase) {
+            // Lifecycle callbacks
+            for (let entry in informationBase[fileEntry].PolymerComponentFunctionsExtractor) {
+                let lifecycleCallbacks = ['created', 'ready', 'attached', 'detached', 'attributeChanged'];
 
-            let componentModel = componentModelContainer.getComponent(entry);
+                let componentModel = componentModelContainer.getComponent(entry);
 
-            informationBase.PolymerComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name)).forEach(a => {
-                let behaviourRuleBuilder = new BehaviourRuleBuilder();
-                let rule = behaviourRuleBuilder
-                    .setEvent(a.name, 'this')
-                    .addMethod('this', a.name)
-                    .create();
-                componentModel.addBehaviourRule(rule);
-            });
-        }
+                informationBase[fileEntry].PolymerComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name)).forEach(a => {
+                    let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                    let rule = behaviourRuleBuilder
+                        .setEvent(a.name, 'this')
+                        .addMethod('this', a.name)
+                        .create();
+                    componentModel.addBehaviourRule(rule);
+                });
+            }
 
-        // Listeners
-        for (let entry in informationBase.PolymerComponentListenersExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
+            // Listeners
+            for (let entry in informationBase[fileEntry].PolymerComponentListenersExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
 
-            informationBase.PolymerComponentListenersExtractor[entry].forEach(a => {
+                informationBase[fileEntry].PolymerComponentListenersExtractor[entry].forEach(a => {
 
-                let behaviourRuleBuilder = new BehaviourRuleBuilder();
-                let rule = behaviourRuleBuilder
-                    .setEvent(a.event, a.target)
-                    .addMethod('this', a.method)
-                    .create();
-                componentModel.addBehaviourRule(rule);
-            });
+                    let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                    let rule = behaviourRuleBuilder
+                        .setEvent(a.event, a.target)
+                        .addMethod('this', a.method)
+                        .create();
+                    componentModel.addBehaviourRule(rule);
+                });
 
-        }
+            }
 
-        // Add variables
-        for (let entry in informationBase.PolymerComponentPropertiesExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-            informationBase.PolymerComponentPropertiesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+            // Add variables
+            for (let entry in informationBase[fileEntry].PolymerComponentPropertiesExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
+                informationBase[fileEntry].PolymerComponentPropertiesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+            }
+
         }
 
         console.log('[PolymerModelGenerator] model', componentModelContainer.toObject());
