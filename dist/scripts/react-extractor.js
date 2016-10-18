@@ -39,6 +39,9 @@ class ReactModelExtractorChain {
 // ########################################################################
 
 class ReactComponentNameExtractor extends AbstractExtractor {
+    descriptor() {
+        return 'components';
+    }
     extract(input) {
         let components = input.getComponents();
         return components.map(a => a.getContents().id.name);

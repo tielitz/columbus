@@ -41,6 +41,9 @@ class AngularModelExtractorChain {
 // ########################################################################
 
 class AngularComponentNameExtractor extends AbstractExtractor {
+    descriptor() {
+        return 'components';
+    }
     extract(input) {
         let components = input.getComponents();
         return components.map(a => a.getName());

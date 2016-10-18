@@ -7,9 +7,9 @@ class AngularModelGenerator {
 
         // Create structural dependencies and initial setup
         for (let fileEntry in informationBase) {
-            for (let entry in informationBase[fileEntry].AngularComponentNameExtractor) {
+            for (let entry in informationBase[fileEntry].components) {
                 // iterate over the component dependencies
-                let componentModel = new ComponentModel(informationBase[fileEntry].AngularComponentNameExtractor[entry]);
+                let componentModel = new ComponentModel(informationBase[fileEntry].components[entry]);
                 componentModelContainer.addComponentModel(componentModel);
             }
         }

@@ -7,9 +7,9 @@ class PolymerModelGenerator {
 
         // Create structural dependencies and initial setup
         for (let fileEntry in informationBase) {
-            for (let entry in informationBase[fileEntry].PolymerComponentNameExtractor) {
+            for (let entry in informationBase[fileEntry].components) {
                 // iterate over the component dependencies
-                let componentModel = new ComponentModel(informationBase[fileEntry].PolymerComponentNameExtractor[entry]);
+                let componentModel = new ComponentModel(informationBase[fileEntry].components[entry]);
                 componentModelContainer.addComponentModel(componentModel);
             }
         }
