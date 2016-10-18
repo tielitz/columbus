@@ -35,7 +35,7 @@
 <md-toolbar>
     <div class="md-toolbar-tools" md-whiteframe="3">
         <div class="md-toolbar-item">
-            <span class="md-headline">Columbus for {{ framework }}</span>
+            <span class="md-headline">Columbus</span>
         </div>
     </div>
 </md-toolbar>
@@ -49,7 +49,6 @@
               </md-card-title-text>
             </md-card-title>
             <md-card-content>
-                <!-- <md-button ng-click="fillDummy()">Fill with dummy code</md-button> -->
                 <form>
                     <md-input-container class="md-block">
                         <label>Github Owner</label>
@@ -66,7 +65,14 @@
                     <md-button ng-click="parseGithub()">Parse</md-button>
                 </form>
 
-                <!-- <editor type='javascript' content="jsContent"></editor> -->
+                <md-tabs layout="column" md-dynamic-height ng-show="githubRepositoryContainer.tree.length > 0">
+                    <md-tab ng-repeat="(key, value) in githubRepositoryContainer.tree">
+                        <md-tab-label>{{ value.path }}</md-tab-label>
+                        <md-tab-body>
+                            <editor type='javascript' content="value.source" readonly></editor>
+                        </md-tab-body>
+                    </md-tab>
+                </md-tabs>
             </md-card-content>
             <md-card-actions layout="row" layout-align="end center">
                 <!--<md-input-container>

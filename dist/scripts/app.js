@@ -83,6 +83,7 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.modelContent = '';
         $scope.framework = 'React';
 
+        $scope.githubRepositoryContainer = null;
         $scope.gitHubOwner = 'tielitz';
         $scope.gitHubRepo = 'columbus-react-example';
         $scope.gitHubSha = '27e797fd6044ec6a83089dddd0c525978a5911bf';
@@ -158,6 +159,7 @@ angular.module('columbusApp', ['ngMaterial'])
             githubEndpoint.getTreeRecursively($scope.gitHubOwner, $scope.gitHubRepo, $scope.gitHubSha)
                 .then(function (container) {
                     console.log('[parseGithub] finished parsing', container);
+                    $scope.githubRepositoryContainer = container;
 
                     // iterate over all files. Parse ast and extract information grouped by file
 
