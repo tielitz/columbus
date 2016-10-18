@@ -1,22 +1,11 @@
 'use strict';
 
-class ModelExtractorChain {
+class SharedModelExtractorChain {
     constructor() {
         this.extractors = [
-            new ComponentNameExtractor(),
-            new ComponentBindingsExtractor(),
-            new ComponentDependencyExtractor(),
-            new ComponentFunctionsExtractor(),
-            new ComponentPropertiesExtractor()
-            // new ComponentListenersExtractor()
-            // new ComponentDependencyExtractor(),
-            // new ComponentRenderPropsExtractor(),
-            // new ComponentRenderStyleExtractor(),
-            // new ComponentFunctionReturnValueExtractor(),
-            // new ComponentRenderHtmlExtractor(),
-            // new ComponentRenderBehaviourExtractor()
+            new FileImportExtractor(),
         ];
-        console.log('[ModelExtractorChain] registered '+this.extractors.length+' extractors');
+        console.log('[SharedModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
 
     /**
@@ -81,5 +70,12 @@ class AbstractComponentBasedExtractor extends AbstractExtractor {
 
     extractFromComponent(component) {
         return undefined;
+    }
+}
+
+class FileImportExtractor extends AbstractExtractor {
+    extract(input) {
+        let imports = input.queryAst('[body]>[type=VariableDeclaration] [callee.name="require"]');
+        return imports.map(a => a.getContents().arguments[0].value);
     }
 }

@@ -5,70 +5,55 @@ class ReactModelGenerator {
         console.log('[ReactModelGenerator] started generation process', informationBase);
         let componentModelContainer = new ComponentModelContainer();
 
-        // Create structural dependencies and initial setup
-        for (let entry in informationBase.ReactComponentDependencyExtractor) {
-            // iterate over the component dependencies
-            let componentModel = new ComponentModel(entry);
-            // informationBase.ReactComponentDependencyExtractor[entry].forEach(a => componentModel.addComponentDependency(a));
-            componentModelContainer.addComponentModel(componentModel);
+        // Intial setup of all components
+        for (let fileEntry in informationBase) {
+            // Create structural dependencies and initial setup
+            for (let entry in informationBase[fileEntry].ReactComponentDependencyExtractor) {
+                // iterate over the component dependencies
+                let componentModel = new ComponentModel(entry);
+                componentModelContainer.addComponentModel(componentModel);
+            }
         }
 
-        // Add parts
-        for (let entry in informationBase.ReactComponentRenderHtmlExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-            componentModel.addParts(this.convertToStructurPartsModel(
-                informationBase.ReactComponentRenderHtmlExtractor[entry],
-                componentModel
-            ));
-        }
+        // generation process
+        for (let fileEntry in informationBase) {
+            // Add parts
+            for (let entry in informationBase[fileEntry].ReactComponentRenderHtmlExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
+                componentModel.addParts(this.convertToStructurPartsModel(
+                    informationBase[fileEntry].ReactComponentRenderHtmlExtractor[entry],
+                    componentModel
+                ));
+            }
 
-        // Add functions
-        // for (let entry in informationBase.ReactComponentFunctionsExtractor) {
-        //     let componentModel = componentModelContainer.getComponent(entry);
-        //     informationBase.ReactComponentFunctionsExtractor[entry].forEach(func => {
+            // Behaviour rules
+            for (let entry in informationBase[fileEntry].ReactComponentRenderBehaviourExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
+                // iterates over html elements
+                informationBase[fileEntry].ReactComponentRenderBehaviourExtractor[entry].forEach(entry => {
 
-        //         if (informationBase.ReactComponentFunctionReturnValueExtractor[entry][func.name] !== undefined) {
-        //             // the information base contains information about the return value
-        //             componentModel.addFunction(func.name, func.params, informationBase.ReactComponentFunctionReturnValueExtractor[entry][func.name])
-        //         } else {
-        //             componentModel.addFunction(func.name, func.params)
-        //         }
-        //     });
-        // }
-
-        // Behaviour rules
-        for (let entry in informationBase.ReactComponentRenderBehaviourExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-            // iterates over html elements
-            informationBase.ReactComponentRenderBehaviourExtractor[entry].forEach(entry => {
-
-                // each element can contain multiple events
-                entry.properties.forEach(event => {
-                    let behaviourRuleBuilder = new BehaviourRuleBuilder();
-                    let rule = behaviourRuleBuilder
-                        .setEvent(event.event, entry.element) // TODO: missing any form of id
-                        .addMethod(event.action.split('.')[0], event.action.split('.')[1], event.params)
-                        .create();
-                    componentModel.addBehaviourRule(rule);
+                    // each element can contain multiple events
+                    entry.properties.forEach(event => {
+                        let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                        let rule = behaviourRuleBuilder
+                            .setEvent(event.event, entry.element) // TODO: missing any form of id
+                            .addMethod(event.action.split('.')[0], event.action.split('.')[1], event.params)
+                            .create();
+                        componentModel.addBehaviourRule(rule);
+                    });
                 });
-            });
+            }
+
+            // Add variables
+            // Variables can be declared in ReactComponentProptypesExtractor || ReactComponentRenderPropsExtractor
+            for (let entry in informationBase[fileEntry].ReactComponentProptypesExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
+                informationBase[fileEntry].ReactComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                informationBase[fileEntry].ReactComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                informationBase[fileEntry].ReactComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+            }
+
         }
-
-        // Add variables
-        // Variables can be declared in ReactComponentProptypesExtractor || ReactComponentRenderPropsExtractor
-        for (let entry in informationBase.ReactComponentProptypesExtractor) {
-            let componentModel = componentModelContainer.getComponent(entry);
-            informationBase.ReactComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-            informationBase.ReactComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-            informationBase.ReactComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-        }
-
-        // CSS Styles
-        // for (let entry in informationBase.ReactComponentRenderStyleExtractor) {
-        //     let componentModel = componentModelContainer.getComponent(entry);
-        //     informationBase.ReactComponentRenderStyleExtractor[entry].forEach(a => componentModel.addMultipleStyles(a));
-        // }
-
 
         console.log('[ReactModelGenerator] model', componentModelContainer.toObject());
         return {components: componentModelContainer.toObject()};

@@ -207,8 +207,11 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
             case 'Identifier':
                 parentContent = {type: 'Identifier', value: content[0].name};
                 break;
+            case 'MemberExpression':
+                parentContent = {type: 'Identifier', value: content[0].object.name};
+                break;
             default:
-                throw Exception('Unexpected content[0] type ' + content[0].type);
+                throw new Error('Unexpected content[0] type ' + content[0].type);
         }
 
         // If an object {} is present at the second place, check if it contains an id property

@@ -76,71 +76,16 @@ angular.module('columbusApp', ['ngMaterial'])
             throw new Error('This Application depends on Esprima library - http://esprima.org/');
         }
 
-        $scope.jsContent = `
-'use strict';
-
-var HelloWorld = React.createClass({
-  propTypes: {
-    asdf: React.PropTypes.string
-  },
-  sayGreeting: function () {
-    return 'Hello';
-  },
-  render: function() {
-    return (
-        <div>
-          {this.sayGreeting()}, {this.props.asdf}!
-          <HelloWorld><Child /></HelloWorld>
-        </div>
-      );
-  }
-});
-
-var AdvancedHelloWorld = React.createClass({
-  displayName: 'AdvancedHelloWorld',
-
-  propTypes: {
-    greeting: React.PropTypes.bool,
-    name: React.PropTypes.string
-  },
-  getDefaultProps: function getDefaultProps() {
-    return {
-      greeting: true,
-      name: 'Dummy'
-    };
-  },
-  sayHello: function sayHello(param1, param2) {
-    return 'Hello';
-  },
-  shouldGreet: function shouldGreet(param3) {
-    return this.props.greeting;
-  },
-
-  render: function render() {
-    return (
-        <div style="color: #000;font-weight:bold;">
-        <div id="header" onClick={this.sayHello(foo, this.foo(2), 2)}>
-          <img src="" />
-        </div>
-        <div id="body">
-          <p>{this.shouldGreet() ? this.sayHello() : ''} <i>{this.props.name}</i>!</p>
-        </div>
-        <HelloWorld name="Second" />
-        <SecondComponent />
-      </div>
-    );
-  }
-});
-    `;
-
-
+        $scope.jsContent = '';
         $scope.syntaxContent = '';
         $scope.tokensContent = '';
         $scope.infoBaseContent  = '';
         $scope.modelContent = '';
         $scope.framework = 'React';
 
-        $scope.githubUrl = '';
+        $scope.gitHubOwner = 'tielitz';
+        $scope.gitHubRepo = 'columbus-react-example';
+        $scope.gitHubSha = '27e797fd6044ec6a83089dddd0c525978a5911bf';
 
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
@@ -206,17 +151,42 @@ var AdvancedHelloWorld = React.createClass({
             }
         }
 
-        $scope.fillDummy = function fillDummy() {
-            $scope.jsContent = DummyCodeGenerator.generate($scope.framework);
-        }
-
         $scope.parseGithub = function parseGithub() {
-            console.log('[parseGithub] with URL ' + $scope.githubUrl);
+            console.log('[parseGithub] with URL ' + $scope.gitHubOwner + ' ' + $scope.gitHubRepo );
             let githubRepositoryContainer = null;
 
-            githubEndpoint.getTreeRecursively('tielitz', 'columbus', 'ee4d5a6').then(function (container) {
-                console.log('[parseGithub] finished parsing', container);
-            });
+            githubEndpoint.getTreeRecursively($scope.gitHubOwner, $scope.gitHubRepo, $scope.gitHubSha)
+                .then(function (container) {
+                    console.log('[parseGithub] finished parsing', container);
+
+                    // iterate over all files. Parse ast and extract information grouped by file
+
+                    // TODO: ONLY REACT AT THE MOMENT
+                    let astParser = new AstParser($window.esprima);
+                    let babelParser = new JsxParser();
+                    let fileImportExtractor = new FileImportExtractor();
+                    let modelExtractorChain = new ReactModelExtractorChain();
+
+                    let extractedInfoBase = {};
+                    let modelGenerator = new ReactModelGenerator();
+
+                    for (let i = 0; i < container.tree.length; i++) {
+
+                        let fileEntry = container.tree[i];
+
+                        console.log('[parseGithub] processing ' + fileEntry.path);
+                        let parsedSourceCode = babelParser.transform(fileEntry.source);
+                        let ast = astParser.parseReact(parsedSourceCode);
+
+                        extractedInfoBase[fileEntry.path] = modelExtractorChain.apply(ast);
+                        extractedInfoBase[fileEntry.path][fileImportExtractor.descriptor()] = fileImportExtractor.extract(ast);
+                    }
+                    $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
+
+                    let generatedModel = modelGenerator.generate(extractedInfoBase);
+                    $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
+
+                });
         }
 
     })

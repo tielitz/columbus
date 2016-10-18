@@ -42,12 +42,9 @@ class Ast {
 class ReactAst extends Ast {
     getComponents() {
         let components = this.queryAst(
-            '[body] > [type="VariableDeclaration"] > [init.type="CallExpression"]'
+            '[body] > [type="VariableDeclaration"] > [init.type="CallExpression"][init.callee.property.name="createClass"]'
         );
-        return components.filter(a => {
-            return a.getContents().init.callee.object.name === 'React'
-                    && a.getContents().init.callee.property.name === 'createClass'
-        }).map(a => new ReactAst(a.getContents()));
+        return components.map(a => new ReactAst(a.getContents()));
     }
     getName() {
         return this.getContents().id.name;
@@ -126,7 +123,7 @@ class AstHelper {
     }
 
     static isReactCreateElement(entry) {
-        return entry.type === 'CallExpression' && AstHelper.extractExpression(entry) === 'React.createElement()';
+        return entry.type === 'CallExpression' && AstHelper.extractExpression(entry).endsWith('.default.createElement()');
     }
 
     static extractFunctionParameters(expr) {

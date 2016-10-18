@@ -49,26 +49,34 @@
               </md-card-title-text>
             </md-card-title>
             <md-card-content>
-                <md-button ng-click="fillDummy()">Fill with dummy code</md-button>
+                <!-- <md-button ng-click="fillDummy()">Fill with dummy code</md-button> -->
                 <form>
                     <md-input-container class="md-block">
-                        <label>Github URL</label>
-                        <input type="text" ng-model="githubUrl">
+                        <label>Github Owner</label>
+                        <input type="text" ng-model="gitHubOwner">
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Github Repository</label>
+                        <input type="text" ng-model="gitHubRepo">
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Github SHA</label>
+                        <input type="text" ng-model="gitHubSha">
                     </md-input-container>
                     <md-button ng-click="parseGithub()">Parse</md-button>
                 </form>
 
-                <editor type='javascript' content="jsContent"></editor>
+                <!-- <editor type='javascript' content="jsContent"></editor> -->
             </md-card-content>
             <md-card-actions layout="row" layout-align="end center">
-                <md-input-container>
+                <!--<md-input-container>
                     <md-select ng-model="framework" placeholder="Select a framework">
                         <md-option>React</md-option>
                         <md-option>Polymer</md-option>
                         <md-option>Angular</md-option>
                     </md-select>
                 </md-input-container>
-                <md-button class="md-raised" ng-click="extractModel()">Extract model</md-button>
+                <md-button class="md-raised" ng-click="extractModel()">Extract model</md-button>-->
             </md-card-actions>
         </md-card>
         <md-card flex >
@@ -98,12 +106,12 @@
                             <editor type='json' content="infoBaseContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
-                    <md-tab id="model" ng-if="framework == 'React'">
+                    <!-- <md-tab id="model" ng-if="framework == 'React'">
                         <md-tab-label>Dependencies</md-tab-label>
                         <md-tab-body>
                             <dependency-graph content="infoBaseContent" width=660 height=700></dependency-graph>
                         </md-tab-body>
-                    </md-tab>
+                    </md-tab> -->
                     <md-tab id="infobase">
                         <md-tab-label>Model</md-tab-label>
                         <md-tab-body>
