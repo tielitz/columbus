@@ -135,4 +135,22 @@ class AstHelper {
             };
         });
     }
+
+    static isReactCode(code)  {
+        console.log('[isReactCode]', code);
+        let checker = code.querySingleAst('[callee.object.property.name="default"][callee.property.name="createClass"]');
+        return checker !== null;
+    }
+
+    static isAngularCode(code)  {
+        console.log('[isAngularCode]', code);
+        let checker = code.querySingleAst('[body] > [type="VariableDeclaration"] > [init.type="CallExpression"][init.callee.property.name="createClass"]');
+        return checker !== null;
+    }
+
+    static isPolymerCode(code)  {
+        console.log('[isPolymerCode]', code);
+        let checker = code.querySingleAst('[body] [type=CallExpression][callee.name=Polymer]');
+        return checker !== null;
+    }
 }

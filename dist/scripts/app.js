@@ -167,10 +167,10 @@ angular.module('columbusApp', ['ngMaterial'])
                     let astParser = new AstParser($window.esprima);
                     let babelParser = new JsxParser();
                     let fileImportExtractor = new FileImportExtractor();
-                    let modelExtractorChain = new ReactModelExtractorChain();
+                    let modelExtractorChain = null;
 
                     let extractedInfoBase = {};
-                    let modelGenerator = new ReactModelGenerator();
+                    let modelGenerator = null;
 
                     for (let i = 0; i < container.tree.length; i++) {
 
@@ -178,7 +178,22 @@ angular.module('columbusApp', ['ngMaterial'])
 
                         console.log('[parseGithub] processing ' + fileEntry.path);
                         let parsedSourceCode = babelParser.transform(fileEntry.source);
-                        let ast = astParser.parseReact(parsedSourceCode);
+                        let ast = astParser.parse(parsedSourceCode);
+
+                        if (ast instanceof ReactAst) {
+                            modelExtractorChain = new ReactModelExtractorChain();
+                            modelGenerator = new ReactModelGenerator();
+                        }
+
+                        if (ast instanceof AngularAst) {
+                            modelExtractorChain = new AngularModelExtractorChain();
+                            modelGenerator = new AngularModelGenerator();
+                        }
+
+                        if (ast instanceof PolymerAst) {
+                            modelExtractorChain = new PolymerModelExtractorChain();
+                            modelGenerator = new PolymerModelGenerator();
+                        }
 
                         extractedInfoBase[fileEntry.path] = modelExtractorChain.apply(ast);
                         extractedInfoBase[fileEntry.path][fileImportExtractor.descriptor()] = fileImportExtractor.extract(ast);

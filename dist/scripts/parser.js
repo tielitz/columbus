@@ -5,7 +5,21 @@ class AstParser {
         this.parser = parser;
     }
     parse(code) {
-        let ast = this.parser.parse(code);
+        let ast = new Ast(this.parser.parse(code));
+
+        // check which framework it is
+        if (AstHelper.isReactCode(ast)) {
+            return new ReactAst(ast.getContents());
+        }
+
+        if (AstHelper.isAngularCode(ast)) {
+            return new AngularAst(ast.getContents());
+        }
+
+        if (AstHelper.isPolymerCode(ast)) {
+            return new PolymerAst(ast.getContents());
+        }
+
         return new Ast(ast);
     }
     parseReact(code) {
