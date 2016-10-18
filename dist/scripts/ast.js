@@ -144,13 +144,13 @@ class AstHelper {
 
     static isAngularCode(code)  {
         console.log('[isAngularCode]', code);
-        let checker = code.querySingleAst('[body] > [type="VariableDeclaration"] > [init.type="CallExpression"][init.callee.property.name="createClass"]');
+        let checker = code.querySingleAst('[type="ExpressionStatement"] [callee.property.name=component]');
         return checker !== null;
     }
 
     static isPolymerCode(code)  {
         console.log('[isPolymerCode]', code);
-        let checker = code.querySingleAst('[body] [type=CallExpression][callee.name=Polymer]');
+        let checker = code.querySingleAst('[body] [type=CallExpression][callee.type="SequenceExpression"] [property.name="default"]');
         return checker !== null;
     }
 }
