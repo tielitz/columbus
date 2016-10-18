@@ -86,7 +86,7 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.githubRepositoryContainer = null;
         $scope.gitHubOwner = 'tielitz';
         $scope.gitHubRepo = 'columbus-react-example';
-        $scope.gitHubSha = '27e797fd6044ec6a83089dddd0c525978a5911bf';
+        $scope.gitHubSha = 'HEAD';
 
         $scope.extractModel = function extractModel() {
             console.log('extracting the model');
