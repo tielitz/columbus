@@ -1,6 +1,6 @@
 'use strict';
 
-class ReactModelGenerator {
+class ReactModelGenerator extends AbstractModelGenerator {
     generate(informationBase) {
         console.log('[ReactModelGenerator] started generation process', informationBase);
         let componentModelContainer = new ComponentModelContainer();

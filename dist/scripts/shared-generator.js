@@ -1,5 +1,23 @@
 'use strict';
 
+class AbstractModelGenerator {
+    generate(informationBase) {
+        throw new Error('Method not implemented');
+    }
+    createDependencyGraphModel(informationBase) {
+        let model = {};
+
+        for (let fileEntry in informationBase) {
+            model[fileEntry] = {
+                components: informationBase[fileEntry].components,
+                dependencies: informationBase[fileEntry].FileImportExtractor
+            };
+        }
+
+        return model;
+    }
+}
+
 class ComponentModelUtil {
     static getEmptyModel() {
         return {

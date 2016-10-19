@@ -81,14 +81,15 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.tokensContent = '';
         $scope.infoBaseContent  = '';
         $scope.modelContent = '';
-        $scope.framework = 'React';
+
+        $scope.dependencyGraph = null;
 
         $scope.githubRepositoryContainer = null;
         $scope.gitHubOwner = 'tielitz';
-        $scope.gitHubRepo = 'columbus-polymer-example';
+        $scope.gitHubRepo = 'columbus-react-example';
         $scope.gitHubSha = 'HEAD';
 
-        $scope.extractModel = function extractModel() {
+        /*$scope.extractModel = function extractModel() {
             console.log('extracting the model');
 
             try {
@@ -150,7 +151,7 @@ angular.module('columbusApp', ['ngMaterial'])
                 alert('Error ' + err);
                 throw err;
             }
-        }
+        }*/
 
         $scope.parseGithub = function parseGithub() {
             console.log('[parseGithub] with URL ' + $scope.gitHubOwner + ' ' + $scope.gitHubRepo );
@@ -163,7 +164,6 @@ angular.module('columbusApp', ['ngMaterial'])
 
                     // iterate over all files. Parse ast and extract information grouped by file
 
-                    // TODO: ONLY REACT AT THE MOMENT
                     let astParser = new AstParser($window.esprima);
                     let babelParser = new JsxParser();
                     let fileImportExtractor = new FileImportExtractor();
@@ -203,6 +203,9 @@ angular.module('columbusApp', ['ngMaterial'])
                     let generatedModel = modelGenerator.generate(extractedInfoBase);
                     $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
 
+                    $scope.dependencyGraph = JSON.stringify(
+                        modelGenerator.createDependencyGraphModel(extractedInfoBase)
+                        , null, '\t');
                 });
         }
 
