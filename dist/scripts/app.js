@@ -82,7 +82,7 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.infoBaseContent  = '';
         $scope.modelContent = '';
 
-        $scope.dependencyGraph = null;
+        $scope.dependencyGraph = '';
 
         $scope.githubRepositoryContainer = null;
         $scope.gitHubOwner = 'tielitz';
@@ -169,6 +169,8 @@ angular.module('columbusApp', ['ngMaterial'])
                     let fileImportExtractor = new FileImportExtractor();
                     let modelExtractorChain = null;
 
+                    let extractedAstContent = {};
+                    let extractedTokenContent = {};
                     let extractedInfoBase = {};
                     let modelGenerator = null;
 
@@ -195,9 +197,14 @@ angular.module('columbusApp', ['ngMaterial'])
                             modelGenerator = new PolymerModelGenerator();
                         }
 
+                        extractedAstContent[fileEntry.path] = ast.getContents();
+                        extractedTokenContent[fileEntry.path] = (new TokenParser($window.esprima)).parse(parsedSourceCode);
+
                         extractedInfoBase[fileEntry.path] = modelExtractorChain.apply(ast);
                         extractedInfoBase[fileEntry.path][fileImportExtractor.descriptor()] = fileImportExtractor.extract(ast);
                     }
+                    $scope.syntaxContent = JSON.stringify(extractedAstContent, null, '\t');
+                    $scope.tokensContent = JSON.stringify(extractedTokenContent, null, '\t');
                     $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
 
                     let generatedModel = modelGenerator.generate(extractedInfoBase);
