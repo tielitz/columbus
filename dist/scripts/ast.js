@@ -78,10 +78,7 @@ class AngularAst extends Ast {
     }
     getName() {
         console.log('[AngularAst] getName', this.getContents());
-        let name = this.querySingleAst(
-            '[arguments] :first-child'
-        );
-        return name.getContents().value;
+        return this.getContents().arguments[0].value;
     }
 }
 
