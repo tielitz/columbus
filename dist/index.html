@@ -62,10 +62,14 @@
                         <label>Github SHA</label>
                         <input type="text" ng-model="gitHubSha">
                     </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>Regex</label>
+                        <input type="text" ng-model="folderToParse">
+                    </md-input-container>
                     <md-button ng-click="parseGithub()">Parse</md-button>
                 </form>
 
-                <md-tabs layout="column" md-dynamic-height ng-show="githubRepositoryContainer.tree.length > 0">
+                <md-tabs layout="column" md-dynamic-height ng-show="githubRepositoryContainer.getAllEntries().length > 0">
                     <md-tab ng-repeat="(key, value) in githubRepositoryContainer.tree">
                         <md-tab-label>{{ value.path }}</md-tab-label>
                         <md-tab-body>

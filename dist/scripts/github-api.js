@@ -6,7 +6,7 @@ class GithubRepositoryContainer {
             sha : data.sha,
             url : data.url
         };
-        this.tree = data.tree.filter(a => a.path.endsWith('.js'));
+        this.tree = data.tree;
     }
 
     getAllEntries() {
@@ -22,5 +22,9 @@ class GithubRepositoryContainer {
         this.tree[i]['source'] = source;
 
         console.log('[GithubRepositoryContainer] addSourceForPath', path, i);
+    }
+    applyFilter(reg) {
+        let filter = new RegExp(reg, "gim");;
+        this.tree = this.tree.filter(a => filter.test(a.path));
     }
 }

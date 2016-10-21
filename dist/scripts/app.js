@@ -3,9 +3,9 @@
 angular.module('columbusApp', ['ngMaterial'])
     .factory('githubEndpoint', ['$http', '$q', function ($http, $q) {
         return {
-            getTreeRecursively: function getTreeRecursively(owner, repo, sha) {
+            getTreeRecursively: function getTreeRecursively(owner, repo, sha, directory) {
                 let url = 'https://api.github.com/repos/'+owner+'/'+repo+'/git/trees/'+sha+'?recursive=1';
-                console.log('[getTreeRecursively]', owner, repo, sha, url);
+                console.log('[getTreeRecursively]', owner, repo, sha, directory, url);
 
                 var deferred = $q.defer();
 
@@ -19,6 +19,7 @@ angular.module('columbusApp', ['ngMaterial'])
                     console.log('[getTreeRecursively] successCallback', response);
 
                     let githubRepositoryContainer = new GithubRepositoryContainer(response.data);
+                    githubRepositoryContainer.applyFilter(directory);
                     let treeEntries =githubRepositoryContainer.getAllEntries();
 
                     var subDeferreds = [];
@@ -58,9 +59,14 @@ angular.module('columbusApp', ['ngMaterial'])
                     'Authorization': 'token 18c2edbf6816fcad281d62ea52a70a11a422ae40'
                 }
             }).then(function successCallback(response) {
+                let content = undefined;
+                try {
+                    content = atob(response.data.content);
+                } catch (e) { /* dont care  */}
+
                 deferred.resolve({
                     path: path,
-                    content: atob(response.data.content)
+                    content: content
                 });
             }, function errorCallback(response) {
                 console.log('Could not fetch source', url, response);
@@ -88,6 +94,7 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.gitHubOwner = 'tielitz';
         $scope.gitHubRepo = 'columbus-react-example';
         $scope.gitHubSha = 'HEAD';
+        $scope.folderToParse = '^.*\\.js$';
 
         /*$scope.extractModel = function extractModel() {
             console.log('extracting the model');
@@ -157,7 +164,7 @@ angular.module('columbusApp', ['ngMaterial'])
             console.log('[parseGithub] with URL ' + $scope.gitHubOwner + ' ' + $scope.gitHubRepo );
             let githubRepositoryContainer = null;
 
-            githubEndpoint.getTreeRecursively($scope.gitHubOwner, $scope.gitHubRepo, $scope.gitHubSha)
+            githubEndpoint.getTreeRecursively($scope.gitHubOwner, $scope.gitHubRepo, $scope.gitHubSha, $scope.folderToParse)
                 .then(function (container) {
                     console.log('[parseGithub] finished parsing', container);
                     $scope.githubRepositoryContainer = container;
