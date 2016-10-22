@@ -39,6 +39,7 @@
         </div>
     </div>
 </md-toolbar>
+<md-progress-linear md-mode="indeterminate" ng-disabled="!loading"></md-progress-linear>
 
 <md-content class="md-padding">
     <div layout="row">
@@ -49,23 +50,23 @@
               </md-card-title-text>
             </md-card-title>
             <md-card-content>
-                    <md-input-container class="md-block">
-                        <label>Github Owner</label>
-                        <input type="text" ng-model="gitHubOwner" required>
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <label>Github Repository</label>
-                        <input type="text" ng-model="gitHubRepo" required>
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <label>Github SHA</label>
-                        <input type="text" ng-model="gitHubSha" required>
-                    </md-input-container>
-                    <md-input-container class="md-block">
-                        <label>Regex</label>
-                        <input type="text" ng-model="folderToParse">
-                    </md-input-container>
-                    <md-button type="submit" ng-click="parseGithub()" class="md-raised md-primary">Parse</md-button>
+                <md-input-container class="md-block">
+                    <label>Github Owner</label>
+                    <input type="text" ng-model="gitHubOwner" required>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>Github Repository</label>
+                    <input type="text" ng-model="gitHubRepo" required>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>Github SHA</label>
+                    <input type="text" ng-model="gitHubSha" required>
+                </md-input-container>
+                <md-input-container class="md-block">
+                    <label>Regex</label>
+                    <input type="text" ng-model="folderToParse">
+                </md-input-container>
+                <md-button type="submit" ng-click="parseGithub()" class="md-raised md-primary">Parse</md-button>
 
                 <script type="text/ng-template"  id="tree_item_renderer.html">
                     <a href="#0" ng-if="!data.children" ng-click="selectFile(data.path)">{{ data.name }}</a>

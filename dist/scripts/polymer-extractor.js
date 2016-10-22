@@ -48,6 +48,8 @@ class PolymerComponentPropertiesExtractor extends AbstractComponentBasedExtracto
             '[type=Property][key.type=Identifier][key.name=properties]>[properties]>[type=Property]'
         );
 
+        if (!properties) return;
+
         return properties.map(a => {
 
             let typeAst = a.querySingleAst('[type=Property][key.type=Identifier][key.name=type]');
@@ -69,6 +71,8 @@ class PolymerComponentFunctionsExtractor extends AbstractComponentBasedExtractor
             '[arguments]>[properties]>[type=Property][value.type=FunctionExpression]'
         );
 
+        if (!funcs) return;
+
         return funcs.map(a => {
             return {
                 name: a.getContents().key.name,
@@ -83,6 +87,8 @@ class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor
         let listeners = component.queryAst(
             '[type=Property][key.type=Identifier][key.name=listeners]>[properties]>[type=Property]'
         );
+
+        if (!listeners) return;
 
         return listeners.map(a => this.parseListenerEntry(a.getContents()));
     }

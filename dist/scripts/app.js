@@ -98,6 +98,7 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.gitHubRepo = 'columbus-react-example';
         $scope.gitHubSha = 'HEAD';
         $scope.folderToParse = '^.*\\.js$';
+        $scope.loading = false;
 
         function reset() {
             $scope.jsContent = '';
@@ -114,6 +115,8 @@ angular.module('columbusApp', ['ngMaterial'])
 
         $scope.parseGithub = function parseGithub() {
             reset();
+            $scope.loading = true;
+
             console.log('[parseGithub] with URL ' + $scope.gitHubOwner + ' ' + $scope.gitHubRepo );
             let githubRepositoryContainer = null;
 
@@ -160,9 +163,13 @@ angular.module('columbusApp', ['ngMaterial'])
 
                         extractedAstContent[fileEntry.path] = ast.getContents();
                         extractedTokenContent[fileEntry.path] = (new TokenParser($window.esprima)).parse(parsedSourceCode);
-
-                        extractedInfoBase[fileEntry.path] = modelExtractorChain.apply(ast);
-                        extractedInfoBase[fileEntry.path][fileImportExtractor.descriptor()] = fileImportExtractor.extract(ast);
+                        try {
+                            extractedInfoBase[fileEntry.path] = modelExtractorChain.apply(ast);
+                            extractedInfoBase[fileEntry.path][fileImportExtractor.descriptor()] = fileImportExtractor.extract(ast);
+                        } catch (e) {
+                            // something went wrong with parsing that file
+                            console.warn('Could not parse file ' + fileEntry.path, e);
+                        }
                     }
                     $scope.syntaxContent = JSON.stringify(extractedAstContent, null, '\t');
                     $scope.tokensContent = JSON.stringify(extractedTokenContent, null, '\t');
@@ -174,6 +181,9 @@ angular.module('columbusApp', ['ngMaterial'])
                     $scope.dependencyGraph = JSON.stringify(
                         modelGenerator.createDependencyGraphModel(extractedInfoBase)
                         , null, '\t');
+
+                    // finished with everything
+                    $scope.loading = false;
                 });
         }
 

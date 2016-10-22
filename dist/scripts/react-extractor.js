@@ -54,6 +54,8 @@ class ReactComponentProptypesExtractor extends AbstractComponentBasedExtractor {
             '[key.name="propTypes"] > [properties] > [type]'
         );
 
+        if (!propTypes) return;
+
         return propTypes
             .map(a => {
                 return {
@@ -70,6 +72,8 @@ class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtracto
             '[type="FunctionExpression"][id.name="getDefaultProps"] [type="ReturnStatement"] [properties] [type="Property"]'
         );
 
+        if (!defValues) return;
+
         return defValues.map(a => {
             return {
                 name: a.getContents().key.name,
@@ -84,6 +88,8 @@ class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
         let funcs = component.queryAst(
             '[arguments] > [properties] > [value.type="FunctionExpression"]'
         );
+
+        if (!funcs) return;
 
         return funcs.map(a => {
             return {
@@ -100,6 +106,8 @@ class ReactComponentDependencyExtractor extends AbstractComponentBasedExtractor 
             '[value.id.name="render"] [type="ReturnStatement"] [arguments] [type="Identifier"]:first-child'
         );
 
+        if (!reactCreateElementTags) return;
+
         return reactCreateElementTags.map(a => a.getContents().name);
     }
 }
@@ -109,6 +117,8 @@ class ReactComponentRenderPropsExtractor extends AbstractComponentBasedExtractor
         let props = component.queryAst(
             '[key.name="render"] [type="MemberExpression"][object.property.name="props"]'
         );
+
+        if (!props) return;
 
         return props.map(a => {
             return {name: a.getContents().property.name};
@@ -121,6 +131,8 @@ class ReactComponentRenderStyleExtractor extends AbstractComponentBasedExtractor
         let styles = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ObjectExpression"] [type="Property"][key.name="style"]'
         );
+
+        if (!styles) return;
 
         return styles.map(a => {
             return a.getContents().value.value
@@ -145,6 +157,8 @@ class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedE
 
         let extractedFunctionReturns = {};
 
+        if (!functions) return;
+
         // retrieve the ReturnStatements for each function
         for (let func of functions) {
             let returnStatements = func.queryAst('[type="ReturnStatement"]');
@@ -152,6 +166,8 @@ class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedE
             if (extractedFunctionReturns[func.getContents().id.name] === undefined) {
                 extractedFunctionReturns[func.getContents().id.name] = [];
             }
+
+            if (!returnStatements) continue;
 
             returnStatements.forEach(a => {
 
@@ -184,7 +200,7 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
             '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"]:first-child'
         );
 
-        if (renderReturnStatements.length > 0) {
+        if (renderReturnStatements && renderReturnStatements.length > 0) {
             let renderReturnStatment = renderReturnStatements[0];
             let htmlStructure = this.parseCreateElement(renderReturnStatment.getContents().argument.arguments);
             return htmlStructure;
@@ -258,6 +274,8 @@ class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtra
         let callExpressions = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"] [type="CallExpression"]'
         );
+
+        if (!callExpressions) return;
 
         return callExpressions
             .filter(a => AstHelper.isReactCreateElement(a.getContents()))
