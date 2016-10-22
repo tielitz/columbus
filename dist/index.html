@@ -49,25 +49,23 @@
               </md-card-title-text>
             </md-card-title>
             <md-card-content>
-                <form>
                     <md-input-container class="md-block">
                         <label>Github Owner</label>
-                        <input type="text" ng-model="gitHubOwner">
+                        <input type="text" ng-model="gitHubOwner" required>
                     </md-input-container>
                     <md-input-container class="md-block">
                         <label>Github Repository</label>
-                        <input type="text" ng-model="gitHubRepo">
+                        <input type="text" ng-model="gitHubRepo" required>
                     </md-input-container>
                     <md-input-container class="md-block">
                         <label>Github SHA</label>
-                        <input type="text" ng-model="gitHubSha">
+                        <input type="text" ng-model="gitHubSha" required>
                     </md-input-container>
                     <md-input-container class="md-block">
                         <label>Regex</label>
                         <input type="text" ng-model="folderToParse">
                     </md-input-container>
-                    <md-button ng-click="parseGithub()">Parse</md-button>
-                </form>
+                    <md-button type="submit" ng-click="parseGithub()" class="md-raised md-primary">Parse</md-button>
 
                 <script type="text/ng-template"  id="tree_item_renderer.html">
                     <a href="#0" ng-if="!data.children" ng-click="selectFile(data.path)">{{ data.name }}</a>
@@ -87,16 +85,6 @@
                 </div>
 
             </md-card-content>
-            <md-card-actions layout="row" layout-align="end center">
-                <!--<md-input-container>
-                    <md-select ng-model="framework" placeholder="Select a framework">
-                        <md-option>React</md-option>
-                        <md-option>Polymer</md-option>
-                        <md-option>Angular</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-button class="md-raised" ng-click="extractModel()">Extract model</md-button>-->
-            </md-card-actions>
         </md-card>
         <md-card flex >
             <md-card-title flex="none">
@@ -125,12 +113,6 @@
                             <editor type='json' content="infoBaseContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
-                    <!-- <md-tab id="model" ng-if="framework == 'React'">
-                        <md-tab-label>Dependencies</md-tab-label>
-                        <md-tab-body>
-                            <dependency-graph content="infoBaseContent" width=660 height=700></dependency-graph>
-                        </md-tab-body>
-                    </md-tab> -->
                     <md-tab id="dependencies">
                         <md-tab-label>Dependencies</md-tab-label>
                         <md-tab-body>
@@ -176,7 +158,6 @@
 <script src="scripts/ast.js"></script>
 <script src="scripts/uiml.js"></script>
 <script src="scripts/parser.js"></script>
-<script src="scripts/fill-dummy.js"></script>
 
 <script src="scripts/shared-extractor.js"></script>
 <script src="scripts/shared-generator.js"></script>
