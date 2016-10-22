@@ -24,7 +24,7 @@ class GithubRepositoryContainer {
         console.log('[GithubRepositoryContainer] addSourceForPath', path, i);
     }
     applyFilter(reg) {
-        let filter = new RegExp(reg, "gim");;
+        let filter = new RegExp(reg);
         this.tree = this.tree.filter(a => filter.test(a.path));
     }
 
