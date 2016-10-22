@@ -69,14 +69,23 @@
                     <md-button ng-click="parseGithub()">Parse</md-button>
                 </form>
 
-                <md-tabs layout="column" md-dynamic-height ng-show="githubRepositoryContainer.getAllEntries().length > 0">
-                    <md-tab ng-repeat="(key, value) in githubRepositoryContainer.tree">
-                        <md-tab-label>{{ value.path }}</md-tab-label>
-                        <md-tab-body>
-                            <editor type='javascript' content="value.source" readonly></editor>
-                        </md-tab-body>
-                    </md-tab>
-                </md-tabs>
+                <script type="text/ng-template"  id="tree_item_renderer.html">
+                    <a href="#0" ng-if="!data.children" ng-click="selectFile(data.path)">{{ data.name }}</a>
+                    <span ng-if="data.children">{{ data.name }}</span>
+                    <ul ng-if="data.children.length > 0">
+                        <li ng-repeat="data in data.children" ng-include="'tree_item_renderer.html'"></li>
+                    </ul>
+                </script>
+
+                <ul>
+                    <li ng-repeat="data in githubFolderStructure" ng-include="'tree_item_renderer.html'"></li>
+                </ul>
+
+                <div ng-if="currentSelectedFile != null" >
+                    <h3>{{ currentSelectedFile.path }}</h3>
+                    <editor type='javascript' content="currentSelectedFile.source" readonly></editor>
+                </div>
+
             </md-card-content>
             <md-card-actions layout="row" layout-align="end center">
                 <!--<md-input-container>
@@ -183,7 +192,6 @@
 
 <script src="scripts/app.js"></script>
 <script src="scripts/github-api.js"></script> 
-
 
 </body>
 </html>

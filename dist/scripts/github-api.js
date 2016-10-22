@@ -27,4 +27,45 @@ class GithubRepositoryContainer {
         let filter = new RegExp(reg, "gim");;
         this.tree = this.tree.filter(a => filter.test(a.path));
     }
+
+    getFileAtPath(path) {
+        return this.tree.find(a => a.path == path);
+    }
+
+    getFolderStructure() {
+        let structure = [];
+
+        this.tree.forEach(entry => {
+            let parts = entry.path.split("/");
+
+            let current = structure;
+            for (let i = 0; i < parts.length; i++) {
+
+                if (i == parts.length-1) {
+                    // last element
+                    current.push({
+                        name: parts[i],
+                        path: entry.path,
+                    });
+                    break;
+                }
+
+                let searchIndex = current.findIndex(a => a.name === parts[i]);
+
+                if (searchIndex >= 0) {
+                    // we found the index
+                    current = current[searchIndex].children;
+                } else {
+                    // doesnt exist yet
+                    current.push({name: parts[i], children: []});
+
+                    // we continue with the children
+                    current = current[current.length-1].children;
+                }
+            }
+        });
+        console.log('[getFolderStructure2] ',structure);
+        return structure;
+        return JSON.stringify(structure, null, '\t');
+    }
 }

@@ -91,76 +91,29 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.dependencyGraph = '';
 
         $scope.githubRepositoryContainer = null;
+        $scope.githubFolderStructure = null;
+        $scope.currentSelectedFile = null;
+
         $scope.gitHubOwner = 'tielitz';
         $scope.gitHubRepo = 'columbus-react-example';
         $scope.gitHubSha = 'HEAD';
         $scope.folderToParse = '^.*\\.js$';
 
-        /*$scope.extractModel = function extractModel() {
-            console.log('extracting the model');
+        function reset() {
+            $scope.jsContent = '';
+            $scope.syntaxContent = '';
+            $scope.tokensContent = '';
+            $scope.infoBaseContent  = '';
+            $scope.modelContent = '';
+            $scope.dependencyGraph = '';
 
-            try {
-
-                let astParser = new AstParser($window.esprima);
-                let babelParser = null;
-
-                let ast = null;
-                let parsedSourceCode = null;
-
-                let modelExtractorChain = null;
-                let modelGenerator = null;
-
-                switch ($scope.framework) {
-                    case 'React':
-                        babelParser = new JsxParser();
-                        parsedSourceCode = babelParser.transform($scope.jsContent);
-                        ast = astParser.parseReact(parsedSourceCode);
-
-                        modelExtractorChain = new ReactModelExtractorChain();
-                        modelGenerator = new ReactModelGenerator();
-
-                        break;
-
-                    case 'Polymer':
-                        babelParser = new BabelParser();
-                        parsedSourceCode = babelParser.transform($scope.jsContent);
-                        ast = astParser.parsePolymer(parsedSourceCode);
-
-                        modelExtractorChain = new PolymerModelExtractorChain();
-                        modelGenerator = new PolymerModelGenerator();
-
-                        break;
-
-                    case 'Angular':
-                        babelParser = new BabelParser();
-                        parsedSourceCode = babelParser.transform($scope.jsContent);
-                        ast = astParser.parseAngular(parsedSourceCode);
-
-                        modelExtractorChain = new AngularModelExtractorChain();
-                        modelGenerator = new AngularModelGenerator();
-
-                        break;
-                }
-
-                $scope.syntaxContent = ast.asJson();
-                $scope.tokensContent = JSON.stringify((new TokenParser($window.esprima)).parse(parsedSourceCode), null, '\t');
-
-                let extractedInfoBase = modelExtractorChain.apply(ast);
-
-                $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
-
-                let generatedModel = modelGenerator.generate(extractedInfoBase);
-
-                $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
-
-            } catch (err) {
-                console.log(err);
-                alert('Error ' + err);
-                throw err;
-            }
-        }*/
+            $scope.githubRepositoryContainer = null;
+            $scope.githubFolderStructure = null;
+            $scope.currentSelectedFile = null;
+        }
 
         $scope.parseGithub = function parseGithub() {
+            reset();
             console.log('[parseGithub] with URL ' + $scope.gitHubOwner + ' ' + $scope.gitHubRepo );
             let githubRepositoryContainer = null;
 
@@ -168,6 +121,7 @@ angular.module('columbusApp', ['ngMaterial'])
                 .then(function (container) {
                     console.log('[parseGithub] finished parsing', container);
                     $scope.githubRepositoryContainer = container;
+                    $scope.githubFolderStructure = container.getFolderStructure();
 
                     // iterate over all files. Parse ast and extract information grouped by file
 
@@ -221,6 +175,13 @@ angular.module('columbusApp', ['ngMaterial'])
                         modelGenerator.createDependencyGraphModel(extractedInfoBase)
                         , null, '\t');
                 });
+        }
+
+        $scope.selectFile = function selectFile(filepath) {
+            console.log('[selectFile] should select ', filepath);
+            let file = $scope.githubRepositoryContainer.getFileAtPath(filepath);
+
+            $scope.currentSelectedFile = file;
         }
 
     })
