@@ -16,10 +16,14 @@ class SharedModelExtractorChain {
         let output = {};
 
         for (let extractor of this.extractors) {
-            let extractorDesc = extractor.descriptor();
-            let extractorOut = extractor.extract(input);
+            try {
+                let extractorDesc = extractor.descriptor();
+                let extractorOut = extractor.extract(input);
 
-            output[extractorDesc] = extractorOut;
+                output[extractorDesc] = extractorOut;
+            } catch (e) {
+                console.warn('[ModelExtractorChain] something went wrong with one of the extractors', e);
+            }
         }
 
         return output;

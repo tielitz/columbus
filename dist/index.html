@@ -76,6 +76,7 @@
                     </ul>
                 </script>
 
+                <h3 ng-if="githubFolderStructure">Repository directory structure</h3>
                 <ul>
                     <li ng-repeat="data in githubFolderStructure" ng-include="'tree_item_renderer.html'"></li>
                 </ul>
