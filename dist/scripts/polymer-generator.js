@@ -1,19 +1,7 @@
 'use strict';
 
 class PolymerModelGenerator extends AbstractModelGenerator {
-    generate(informationBase) {
-        console.log('[PolymerModelGenerator] started generation process', informationBase);
-        let componentModelContainer = new ComponentModelContainer();
-
-        // Create structural dependencies and initial setup
-        for (let fileEntry in informationBase) {
-            for (let entry in informationBase[fileEntry].components) {
-                // iterate over the component dependencies
-                let componentModel = new ComponentModel(informationBase[fileEntry].components[entry]);
-                componentModelContainer.addComponentModel(componentModel);
-            }
-        }
-
+    fillFrameworkSpecificPart(componentModelContainer) {
         for (let fileEntry in informationBase) {
             // Lifecycle callbacks
             for (let entry in informationBase[fileEntry].PolymerComponentFunctionsExtractor) {
@@ -52,10 +40,6 @@ class PolymerModelGenerator extends AbstractModelGenerator {
                 let componentModel = componentModelContainer.getComponent(entry);
                 informationBase[fileEntry].PolymerComponentPropertiesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
             }
-
-        }
-
-        console.log('[PolymerModelGenerator] model', componentModelContainer.toObject());
-        return {components: componentModelContainer.toObject()};
+        } // for
     }
 }

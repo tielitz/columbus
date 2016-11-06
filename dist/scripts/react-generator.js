@@ -1,19 +1,7 @@
 'use strict';
 
 class ReactModelGenerator extends AbstractModelGenerator {
-    generate(informationBase) {
-        console.log('[ReactModelGenerator] started generation process', informationBase);
-        let componentModelContainer = new ComponentModelContainer();
-
-        // Intial setup of all components
-        for (let fileEntry in informationBase) {
-            // Create structural dependencies and initial setup
-            for (let entry in informationBase[fileEntry].ReactComponentDependencyExtractor) {
-                // iterate over the component dependencies
-                let componentModel = new ComponentModel(entry);
-                componentModelContainer.addComponentModel(componentModel);
-            }
-        }
+    fillFrameworkSpecificPart(componentModelContainer) {
 
         // generation process
         for (let fileEntry in informationBase) {
@@ -52,11 +40,7 @@ class ReactModelGenerator extends AbstractModelGenerator {
                 informationBase[fileEntry].ReactComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
                 informationBase[fileEntry].ReactComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
             }
-
         }
-
-        console.log('[ReactModelGenerator] model', componentModelContainer.toObject());
-        return {components: componentModelContainer.toObject()};
     }
 
     convertToStructurPartsModel(parts, componentModel) {

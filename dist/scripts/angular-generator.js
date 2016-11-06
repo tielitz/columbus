@@ -1,21 +1,9 @@
 'use strict';
 
 class AngularModelGenerator extends AbstractModelGenerator {
-    generate(informationBase) {
-        console.log('[AngularModelGenerator] started generation process', informationBase);
-        let componentModelContainer = new ComponentModelContainer();
-
-        // Create structural dependencies and initial setup
-        for (let fileEntry in informationBase) {
-            for (let entry in informationBase[fileEntry].components) {
-                // iterate over the component dependencies
-                let componentModel = new ComponentModel(informationBase[fileEntry].components[entry]);
-                componentModelContainer.addComponentModel(componentModel);
-            }
-        }
+    fillFrameworkSpecificPart(componentModelContainer) {
 
         for (let fileEntry in informationBase) {
-
 
             // Lifecycle callbacks
             for (let entry in informationBase[fileEntry].AngularComponentFunctionsExtractor) {
@@ -56,9 +44,7 @@ class AngularModelGenerator extends AbstractModelGenerator {
                 }
             }
 
-        }
+        } // for
 
-        console.log('[AngularModelGenerator] model', componentModelContainer.toObject());
-        return {components: componentModelContainer.toObject()};
     }
 }
