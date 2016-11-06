@@ -2,29 +2,8 @@
 
 class AbstractModelGenerator {
     generate(informationBase) {
-        console.log('[AbstractModelGenerator] started generation process', informationBase);
-        let componentModelContainer = new ComponentModelContainer();
-
-        // Create structural dependencies and initial setup
-        for (let fileEntry in informationBase) {
-            for (let entry in informationBase[fileEntry].components) {
-                // iterate over the component dependencies
-                let componentModel = new ComponentModel(informationBase[fileEntry].components[entry]);
-                componentModelContainer.addComponentModel(componentModel);
-            }
-        }
-
-        fillFrameworkSpecificPart(componentModelContainer);
-
-        console.log('[AngularModelGenerator] model', componentModelContainer.toObject());
-        return {components: componentModelContainer.toObject()};
-    }
-
-    fillFrameworkSpecificPart(componentModelContainer)
-    {
         throw new Error('Method not implemented');
     }
-
     createDependencyGraphModel(informationBase) {
         let model = {};
 
