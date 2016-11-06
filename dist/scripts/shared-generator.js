@@ -146,7 +146,23 @@ class ComponentModel {
         if (this.behaviour.rules === undefined) {
             this.behaviour.rules = [];
         }
-        this.behaviour.rules.push(rule);
+
+        console.log('[ComponentModel] addBehaviourRule', rule, this.behaviour.rules);
+        // check if the event already exists
+        let index = this.behaviour.rules.findIndex(a =>
+            // search for a rule with the same condition
+            (a.condition.class == rule.condition.class) && (a.condition.partName == rule.condition.partName)
+        );
+
+        if (index >= 0) {
+            // append the action at the given index
+            if (this.behaviour.rules[index].actions === undefined) {
+                this.behaviour.rules[index].actions = [];
+            }
+            this.behaviour.rules[index].actions = this.behaviour.rules[index].actions.concat(rule.actions);
+        } else {
+            this.behaviour.rules.push(rule);
+        }
     }
 
     toObject() {

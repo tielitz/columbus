@@ -11,6 +11,7 @@ class ReactModelGenerator extends AbstractModelGenerator {
             for (let entry in informationBase[fileEntry].ReactComponentDependencyExtractor) {
                 // iterate over the component dependencies
                 let componentModel = new ComponentModel(entry);
+                this.addDefaultLifeCycleBehaviourRules(componentModel);
                 componentModelContainer.addComponentModel(componentModel);
             }
         }
@@ -27,6 +28,21 @@ class ReactModelGenerator extends AbstractModelGenerator {
             }
 
             // Behaviour rules
+            for (let entry in informationBase[fileEntry].ReactComponentLifeCycleExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
+                // iterates over html elements
+                informationBase[fileEntry].ReactComponentLifeCycleExtractor[entry].forEach(entry => {
+
+                        let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                        let rule = behaviourRuleBuilder
+                            .setEvent(entry.name) // TODO: missing any form of id
+                            .addMethod(undefined, entry.name, entry.params)
+                            .create();
+                        componentModel.addBehaviourRule(rule);
+                });
+            }
+
+            // custom rules inside render
             for (let entry in informationBase[fileEntry].ReactComponentRenderBehaviourExtractor) {
                 let componentModel = componentModelContainer.getComponent(entry);
                 // iterates over html elements
@@ -57,6 +73,17 @@ class ReactModelGenerator extends AbstractModelGenerator {
 
         console.log('[ReactModelGenerator] model', componentModelContainer.toObject());
         return {components: componentModelContainer.toObject()};
+    }
+
+    addDefaultLifeCycleBehaviourRules(entry) {
+        const events = ['componentWillMount','componentDidMount','componentWillReceiveProps','shouldComponentUpdate',
+            'componentWillUpdate','componentDidUpdate','componentWillUnmount'];
+
+        for (let i = 0; i < events.length; i++) {
+            let behaviourRuleBuilder = new BehaviourRuleBuilder();
+            let rule = behaviourRuleBuilder.setEvent(events[i]).create();
+            entry.addBehaviourRule(rule);
+        }
     }
 
     convertToStructurPartsModel(parts, componentModel) {

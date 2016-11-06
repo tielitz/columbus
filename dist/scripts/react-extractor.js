@@ -12,7 +12,8 @@ class ReactModelExtractorChain {
             new ReactComponentRenderStyleExtractor(),
             new ReactComponentFunctionReturnValueExtractor(),
             new ReactComponentRenderHtmlExtractor(),
-            new ReactComponentRenderBehaviourExtractor()
+            new ReactComponentRenderBehaviourExtractor(),
+            new ReactComponentLifeCycleExtractor()
         ];
         console.log('[ReactModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -312,5 +313,27 @@ class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtra
         let action = AstHelper.extractExpression(entry.value);
         let parameters = AstHelper.extractFunctionParameters(entry.value);
         return {event: key, action: action, params: parameters};
+    }
+}
+
+class ReactComponentLifeCycleExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let funcs = component.queryAst(
+            '[arguments] > [properties] > [value.type="FunctionExpression"]'
+        );
+
+        if (!funcs) return;
+
+        const events = ['componentWillMount','componentDidMount','componentWillReceiveProps','shouldComponentUpdate',
+            'componentWillUpdate','componentDidUpdate','componentWillUnmount'];
+
+        return funcs.filter(a => events.indexOf(a.getContents().value.id.name) >= 0)
+                    .map(a => {
+                        console.log('[ReactComponentLifeCycleExtractor] found entry', a);
+                        return {
+                            name: a.getContents().value.id.name,
+                            params: a.getContents().value.params.map(e => e.name)
+                        }
+                    });
     }
 }

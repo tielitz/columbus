@@ -50,6 +50,7 @@ class JsxParser {
         let transformed = Babel.transform(code, {
             presets: ['es2015', 'react']
         });
+        console.log('[JsxParser] transformed ', transformed.code);
         return transformed.code;
     }
 }
@@ -59,6 +60,7 @@ class BabelParser {
         let transformed = Babel.transform(code, {
             presets: ['es2015']
         });
+        console.log('[Babel] transform ', transformed.code);
         return transformed.code;
     }
 }
