@@ -186,14 +186,6 @@ angular.module('columbusApp', ['ngMaterial'])
                     $scope.loading = false;
                 });
         }
-
-        $scope.selectFile = function selectFile(filepath) {
-            console.log('[selectFile] should select ', filepath);
-            let file = $scope.githubRepositoryContainer.getFileAtPath(filepath);
-
-            $scope.currentSelectedFile = file;
-        }
-
     })
     .directive('editor', ['$window','$timeout', function ($window,$timeout) {
 

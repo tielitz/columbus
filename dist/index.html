@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Angular Material style sheet -->
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
     <style>
         .node {
           stroke: #fff;
@@ -68,22 +68,21 @@
                 </md-input-container>
                 <md-button type="submit" ng-click="parseGithub()" class="md-raised md-primary">Parse</md-button>
 
-                <script type="text/ng-template"  id="tree_item_renderer.html">
-                    <a href="#0" ng-if="!data.children" ng-click="selectFile(data.path)">{{ data.name }}</a>
-                    <span ng-if="data.children">{{ data.name }}</span>
-                    <ul ng-if="data.children.length > 0">
-                        <li ng-repeat="data in data.children" ng-include="'tree_item_renderer.html'"></li>
-                    </ul>
-                </script>
-
-                <h3 ng-if="githubFolderStructure">Repository directory structure</h3>
-                <ul>
-                    <li ng-repeat="data in githubFolderStructure" ng-include="'tree_item_renderer.html'"></li>
-                </ul>
-
-                <div ng-if="currentSelectedFile != null" >
-                    <h3>{{ currentSelectedFile.path }}</h3>
-                    <editor type='javascript' content="currentSelectedFile.source" readonly></editor>
+                <div ng-if="githubFolderStructure">
+                    <h3>Repository directory structure</h3>
+                    <md-input-container style="width:100%;">
+                        <label>Selected file {{ currentSelectedFile.path }}</label>
+                        <md-select ng-model="currentSelectedFile">
+                            <md-option><em>None</em></md-option>
+                            <md-option ng-repeat="entry in githubRepositoryContainer.getAllEntries()" ng-value="entry">
+                                {{ entry.path }}
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                    <div ng-if="currentSelectedFile">
+                        <h3>{{ currentSelectedFile.path }}</h3>
+                        <editor type='javascript' content="currentSelectedFile.source" readonly></editor>
+                    </div>
                 </div>
 
             </md-card-content>
@@ -156,6 +155,13 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.js"></script>
 <script src="//marvl.infotech.monash.edu/webcola/cola.v3.min.js"></script>
 
+<!-- select box -->
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
 <!-- Your application bootstrap  -->
 <script src="scripts/util.js"></script>
 <script src="scripts/ast.js"></script>
@@ -175,7 +181,11 @@
 <script src="scripts/angular-generator.js"></script>
 
 <script src="scripts/app.js"></script>
-<script src="scripts/github-api.js"></script> 
+<script src="scripts/github-api.js"></script>
+
+<!-- <script type="text/javascript">
+  $('select.select2').select2();
+</script>-->
 
 </body>
 </html>
