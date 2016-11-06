@@ -117,7 +117,7 @@ class ComponentModel {
     }
 
     addSingleStyle(name, value) {
-        if (this.style.properties === undefined) {
+        if (this.style.properties === undefined) {
             this.style.properties = [];
         }
         this.style.properties.push({
@@ -126,7 +126,7 @@ class ComponentModel {
         });
     }
     addMultipleStyles(styles) {
-        if (this.style.properties === undefined) {
+        if (this.style.properties === undefined) {
             this.style.properties = [];
         }
 
