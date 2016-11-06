@@ -10,6 +10,7 @@ class PolymerModelGenerator extends AbstractModelGenerator {
             for (let entry in informationBase[fileEntry].components) {
                 // iterate over the component dependencies
                 let componentModel = new ComponentModel(informationBase[fileEntry].components[entry]);
+                this.addDefaultLifeCycleBehaviourRules(componentModel);
                 componentModelContainer.addComponentModel(componentModel);
             }
         }
@@ -21,7 +22,7 @@ class PolymerModelGenerator extends AbstractModelGenerator {
 
                 let componentModel = componentModelContainer.getComponent(entry);
 
-                informationBase[fileEntry].PolymerComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name)).forEach(a => {
+                informationBase[fileEntry].PolymerComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name) >= 0 || a.name.startsWith('on')).forEach(a => {
                     let behaviourRuleBuilder = new BehaviourRuleBuilder();
                     let rule = behaviourRuleBuilder
                         .setEvent(a.name, 'this')
@@ -57,5 +58,15 @@ class PolymerModelGenerator extends AbstractModelGenerator {
 
         console.log('[PolymerModelGenerator] model', componentModelContainer.toObject());
         return {components: componentModelContainer.toObject()};
+    }
+
+    addDefaultLifeCycleBehaviourRules(entry) {
+        const events = ['created', 'ready', 'attached', 'detached', 'attributeChanged'];
+
+        for (let i = 0; i < events.length; i++) {
+            let behaviourRuleBuilder = new BehaviourRuleBuilder();
+            let rule = behaviourRuleBuilder.setEvent(events[i]).create();
+            entry.addBehaviourRule(rule);
+        }
     }
 }

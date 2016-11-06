@@ -10,6 +10,7 @@ class AngularModelGenerator extends AbstractModelGenerator {
             for (let entry in informationBase[fileEntry].components) {
                 // iterate over the component dependencies
                 let componentModel = new ComponentModel(informationBase[fileEntry].components[entry]);
+                this.addDefaultLifeCycleBehaviourRules(componentModel);
                 componentModelContainer.addComponentModel(componentModel);
             }
         }
@@ -19,11 +20,11 @@ class AngularModelGenerator extends AbstractModelGenerator {
 
             // Lifecycle callbacks
             for (let entry in informationBase[fileEntry].AngularComponentFunctionsExtractor) {
-                let lifecycleCallbacks = ['created', 'ready', 'attached', 'detached', 'attributeChanged'];
+                let lifecycleCallbacks = ['$onInit','$onChanges','$doCheck','$onDestroy','$postLink'];
 
                 let componentModel = componentModelContainer.getComponent(entry);
 
-                informationBase[fileEntry].AngularComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name)).forEach(a => {
+                informationBase[fileEntry].AngularComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name) >= 0).forEach(a => {
                     let behaviourRuleBuilder = new BehaviourRuleBuilder();
                     let rule = behaviourRuleBuilder
                         .setEvent(a.name, 'this')
@@ -60,5 +61,15 @@ class AngularModelGenerator extends AbstractModelGenerator {
 
         console.log('[AngularModelGenerator] model', componentModelContainer.toObject());
         return {components: componentModelContainer.toObject()};
+    }
+
+    addDefaultLifeCycleBehaviourRules(entry) {
+        const events = ['$onInit','$onChanges','$doCheck','$onDestroy','$postLink'];
+
+        for (let i = 0; i < events.length; i++) {
+            let behaviourRuleBuilder = new BehaviourRuleBuilder();
+            let rule = behaviourRuleBuilder.setEvent(events[i]).create();
+            entry.addBehaviourRule(rule);
+        }
     }
 }
