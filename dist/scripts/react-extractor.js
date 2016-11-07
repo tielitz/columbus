@@ -202,7 +202,7 @@ class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedE
 class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let renderReturnStatements = component.queryAst(
-            '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"]:first-child'
+            '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"]'
         );
 
         if (renderReturnStatements && renderReturnStatements.length > 0) {

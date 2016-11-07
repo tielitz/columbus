@@ -122,7 +122,9 @@ class AstHelper {
     }
 
     static isReactCreateElement(entry) {
-        return entry.type === 'CallExpression' && AstHelper.extractExpression(entry).endsWith('.default.createElement()');
+        return entry.type === 'CallExpression'
+            && (AstHelper.extractExpression(entry).endsWith('.default.createElement()')
+                    || AstHelper.extractExpression(entry) === ('React.createElement()'));
     }
 
     static extractFunctionParameters(expr) {
@@ -137,8 +139,15 @@ class AstHelper {
 
     static isReactCode(code)  {
         console.log('[isReactCode]', code);
-        let checker = code.querySingleAst('[callee.object.property.name="default"][callee.property.name="createClass"]');
-        return checker !== null;
+        let checker = code.querySingleAst('[callee.property.name="createClass"]');
+
+        let check1 = checker.querySingleAst('[callee.object.name="React"]');
+        if (check1 !== null) return true;
+
+        let check2 = checker.querySingleAst('[callee.object.property.name="default"]');
+        if (check2 !== null) return true;
+
+        return false;
     }
 
     static isAngularCode(code)  {

@@ -175,12 +175,14 @@ angular.module('columbusApp', ['ngMaterial'])
                     $scope.tokensContent = JSON.stringify(extractedTokenContent, null, '\t');
                     $scope.infoBaseContent = JSON.stringify(extractedInfoBase, null, '\t');
 
-                    let generatedModel = modelGenerator.generate(extractedInfoBase);
-                    $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
+                    if (Object.keys(extractedInfoBase).length > 0) {
+                        let generatedModel = modelGenerator.generate(extractedInfoBase);
+                        $scope.modelContent = JSON.stringify(generatedModel, null, '\t');
 
-                    $scope.dependencyGraph = JSON.stringify(
-                        modelGenerator.createDependencyGraphModel(extractedInfoBase)
-                        , null, '\t');
+                        $scope.dependencyGraph = JSON.stringify(
+                            modelGenerator.createDependencyGraphModel(extractedInfoBase)
+                            , null, '\t');
+                    }
 
                     // finished with everything
                     $scope.loading = false;

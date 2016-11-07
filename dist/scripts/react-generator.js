@@ -87,6 +87,9 @@ class ReactModelGenerator extends AbstractModelGenerator {
     }
 
     convertToStructurPartsModel(parts, componentModel) {
+        if (parts === null) {
+            return;
+        }
         let partEntry = {
             _entity:  parts.type === 'Identifier' ? 'reference' : 'part', // Identifier links to another component
             id: parts.id || guid()
