@@ -6,7 +6,8 @@ class PolymerModelExtractorChain {
             new PolymerComponentNameExtractor(),
             new PolymerComponentPropertiesExtractor(),
             new PolymerComponentFunctionsExtractor(),
-            new PolymerComponentListenersExtractor()
+            new PolymerComponentListenersExtractor(),
+            new PolymerAddEventListenerExtractor()
         ];
         console.log('[PolymerModelExtractorChain] registered '+this.extractors.length+' extractors');
     }
@@ -108,5 +109,20 @@ class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor
             'event': keyParts.length > 1 ? keyParts[1] : keyParts[0],
             'method': AstHelper.extractExpression(entry.value)
         };
+    }
+}
+
+class PolymerAddEventListenerExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let listeners = component.queryAst('[type=CallExpression][callee.property.name=addEventListener]');
+
+        if (!listeners) return;
+
+        return listeners.map(a => {
+            return {
+                event: AstHelper.extractExpression(a.getContents().arguments[0]),
+                method: AstHelper.extractExpression(a.getContents().arguments[1])
+            };
+        });
     }
 }

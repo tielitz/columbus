@@ -45,6 +45,20 @@ class PolymerModelGenerator extends AbstractModelGenerator {
                         .create();
                     componentModel.addBehaviourRule(rule);
                 });
+            }
+
+            for (let entry in informationBase[fileEntry].PolymerAddEventListenerExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
+
+                informationBase[fileEntry].PolymerAddEventListenerExtractor[entry].forEach(a => {
+
+                    let behaviourRuleBuilder = new BehaviourRuleBuilder();
+                    let rule = behaviourRuleBuilder
+                        .setEvent(a.event)
+                        .addMethod(a.method.split('.')[0], a.method.split('.')[1])
+                        .create();
+                    componentModel.addBehaviourRule(rule);
+                });
 
             }
 
