@@ -259,7 +259,7 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
                     // start recursive tree
                     childContent = childContent.concat(this.parseCreateElement(child.arguments));
                 }  else {
-                    childContent.push({type: 'CallExpression', value: AstHelper.extractExpression(child)});
+                    childContent.push({type: 'CallExpression', value: AstHelper.extractExpression(child), params: AstHelper.extractFunctionParameters(child)});
                 }
             } else {
                 childContent.push('Unknown type: ' + child.type);
@@ -309,6 +309,7 @@ class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtra
     }
 
     convertPropertyEntry(entry) {
+        console.log('[ReactComponentRenderBehaviourExtractor]', entry);
         let key = entry.key.name;
         let action = AstHelper.extractExpression(entry.value);
         let parameters = AstHelper.extractFunctionParameters(entry.value);

@@ -115,7 +115,7 @@ class ReactModelGenerator extends AbstractModelGenerator {
                 let behaviourRuleBuilder = new BehaviourRuleBuilder();
                 let rule = behaviourRuleBuilder
                     .setEvent('componentWillMount', partEntry['id']) // TODO: missing any form of id
-                    .addMethod(parts.value.split('.')[0], parts.value.split('.')[1], undefined)
+                    .addMethod(parts.value.split('.')[0], parts.value.split('.')[1], parts.params)
                     .create();
                 componentModel.addBehaviourRule(rule);
                 break;

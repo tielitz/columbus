@@ -25,8 +25,8 @@ class PolymerModelGenerator extends AbstractModelGenerator {
                 informationBase[fileEntry].PolymerComponentFunctionsExtractor[entry].filter(a => lifecycleCallbacks.indexOf(a.name) >= 0 || a.name.startsWith('on')).forEach(a => {
                     let behaviourRuleBuilder = new BehaviourRuleBuilder();
                     let rule = behaviourRuleBuilder
-                        .setEvent(a.name, 'this')
-                        .addMethod('this', a.name)
+                        .setEvent(a.name)
+                        .addMethod(undefined, a.name, a.params)
                         .create();
                     componentModel.addBehaviourRule(rule);
                 });

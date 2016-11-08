@@ -129,6 +129,10 @@ class AstHelper {
 
     static extractFunctionParameters(expr) {
         console.log('[AstHelper] extractFunctionParameters', expr);
+        if (expr.arguments === undefined || expr.arguments.length === 0) {
+            return undefined;
+        }
+
         return expr.arguments.map(a => {
             return {
                 type: a.type,
@@ -140,6 +144,8 @@ class AstHelper {
     static isReactCode(code)  {
         console.log('[isReactCode]', code);
         let checker = code.querySingleAst('[callee.property.name="createClass"]');
+
+        if (!checker) return false;
 
         let check1 = checker.querySingleAst('[callee.object.name="React"]');
         if (check1 !== null) return true;
