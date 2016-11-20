@@ -94,10 +94,10 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.githubFolderStructure = null;
         $scope.currentSelectedFile = null;
 
-        $scope.gitHubOwner = 'tielitz';
-        $scope.gitHubRepo = 'columbus-react-example';
+        $scope.gitHubOwner = 'Mobility-Services-Lab'; // 'Mobility-Services-Lab';
+        $scope.gitHubRepo = 'TUMitfahrer-WebApp'; // 'TUMitfahrer-WebApp';
         $scope.gitHubSha = 'HEAD';
-        $scope.folderToParse = '^.*\\.js$';
+        $scope.folderToParse = '^src/components/.*'; //'^src/components/.*\\.jsx$';
         $scope.loading = false;
 
         function reset() {

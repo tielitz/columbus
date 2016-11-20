@@ -39,6 +39,13 @@ class AngularModelGenerator extends AbstractModelGenerator {
                 let componentModel = componentModelContainer.getComponent(entry);
                 informationBase[fileEntry].AngularComponentPropertiesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
             }
+            for (let entry in informationBase[fileEntry].AngularComponentBindingsExtractor) {
+                let componentModel = componentModelContainer.getComponent(entry);
+                if (informationBase[fileEntry].AngularComponentBindingsExtractor[entry]) {
+                    informationBase[fileEntry].AngularComponentBindingsExtractor[entry].forEach(a =>
+                        componentModel.addVariable(a.name));
+                }
+            }
 
             // Structure dependencies
             for (let entry in informationBase[fileEntry].AngularComponentDependencyExtractor) {

@@ -6,7 +6,7 @@ class GithubRepositoryContainer {
             sha : data.sha,
             url : data.url
         };
-        this.tree = data.tree;
+        this.tree = data.tree.filter(entry => entry.type === "blob");
     }
 
     getAllEntries() {
@@ -35,7 +35,7 @@ class GithubRepositoryContainer {
     getFolderStructure() {
         let structure = [];
 
-        this.tree.forEach(entry => {
+        this.tree.filter(entry => entry.type === "blob").forEach(entry => {
             let parts = entry.path.split("/");
 
             let current = structure;
