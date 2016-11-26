@@ -44,9 +44,19 @@ class ReactAst extends Ast {
         let components = this.queryAst(
             '[body] > [type="VariableDeclaration"] > [init.type="CallExpression"][init.callee.property.name="createClass"]'
         );
-        return components.map(a => new ReactAst(a.getContents()));
+
+        let components2 = this.queryAst(
+            '[body] [right.type="CallExpression"][right.callee.property.name="createClass"]'
+        );
+
+        let allComponents = components.concat(components2);
+
+        return allComponents.map(a => new ReactAst(a.getContents()));
     }
     getName() {
+        if (this.getContents().left && this.getContents().left.type === 'MemberExpression') {
+            return this.getContents().left.property.name;
+        }
         return this.getContents().id.name;
     }
 }

@@ -64,10 +64,18 @@ class ReactModelGenerator extends AbstractModelGenerator {
             // Variables can be declared in ReactComponentProptypesExtractor || ReactComponentRenderPropsExtractor
             for (let entry in informationBase[fileEntry].ReactComponentProptypesExtractor) {
                 let componentModel = componentModelContainer.getComponent(entry);
-                informationBase[fileEntry].ReactComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-                informationBase[fileEntry].ReactComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-                informationBase[fileEntry].ReactComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
-                informationBase[fileEntry].ReactComponentInitialStateExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                if (informationBase[fileEntry].ReactComponentProptypesExtractor[entry]) {
+                    informationBase[fileEntry].ReactComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                }
+                if (informationBase[fileEntry].ReactComponentRenderPropsExtractor[entry]) {
+                    informationBase[fileEntry].ReactComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                }
+                if (informationBase[fileEntry].ReactComponentDefaultPropsExtractor[entry]) {
+                    informationBase[fileEntry].ReactComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                }
+                if (informationBase[fileEntry].ReactComponentInitialStateExtractor[entry]) {
+                    informationBase[fileEntry].ReactComponentInitialStateExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                }
             }
 
         }
