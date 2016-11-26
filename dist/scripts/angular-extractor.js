@@ -26,7 +26,7 @@ class AngularModelExtractorChain {
 
                 output[extractorDesc] = extractorOut;
             } catch (e) {
-                console.warn('[ModelExtractorChain] something went wrong with one of the extractors', e);
+                console.warn('[ModelExtractorChain] something went wrong with '+extractor.descriptor(), e);
             }
         }
 
