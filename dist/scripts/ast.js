@@ -65,9 +65,15 @@ class PolymerAst extends Ast {
     getComponents() {
         let components = this.queryAst(
             '[body] [type=CallExpression][callee.type="SequenceExpression"]'
+        ).filter(a => a.getContents().callee.expressions[1].property.name="default");
+
+        let components2 = this.queryAst(
+            '[body] [type=CallExpression][callee.name=Polymer]'
         );
-        return components
-            .filter(a => a.getContents().callee.expressions[1].property.name="default")
+
+        let allComponents = components.concat(components2);
+
+        return allComponents
             .map(a => new PolymerAst(a.getContents()));
     }
     getName() {
@@ -175,6 +181,11 @@ class AstHelper {
     static isPolymerCode(code)  {
         console.log('[isPolymerCode]', code);
         let checker = code.querySingleAst('[body] [type=CallExpression][callee.type="SequenceExpression"] [property.name="default"]');
+
+        if (checker === null) {
+            checker = code.querySingleAst('[body] [type=CallExpression][callee.name=Polymer]');
+        }
+
         return checker !== null;
     }
 }
