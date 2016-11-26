@@ -50,7 +50,14 @@ class ReactComponentNameExtractor extends AbstractExtractor {
     }
     extract(input) {
         let components = input.getComponents();
-        return components.map(a => a.getContents().id.name);
+        return components.map(a => this.extractName(a.getContents()));
+    }
+
+    extractName(a) {
+        if (a.left && a.left.type === 'MemberExpression') {
+            return a.left.property.name;
+        }
+        return a.id.name
     }
 }
 
@@ -105,6 +112,7 @@ class ReactComponentInitialStateExtractor extends AbstractComponentBasedExtracto
         });
     }
 }
+
 class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
