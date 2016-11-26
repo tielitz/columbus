@@ -67,6 +67,7 @@ class ReactModelGenerator extends AbstractModelGenerator {
                 informationBase[fileEntry].ReactComponentProptypesExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
                 informationBase[fileEntry].ReactComponentRenderPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
                 informationBase[fileEntry].ReactComponentDefaultPropsExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
+                informationBase[fileEntry].ReactComponentInitialStateExtractor[entry].forEach(a => componentModel.addVariable(a.name, a.type, a.value));
             }
 
         }

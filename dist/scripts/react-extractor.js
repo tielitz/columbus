@@ -6,6 +6,7 @@ class ReactModelExtractorChain {
             new ReactComponentNameExtractor(),
             new ReactComponentProptypesExtractor(),
             new ReactComponentDefaultPropsExtractor(),
+            new ReactComponentInitialStateExtractor(),
             new ReactComponentFunctionsExtractor(),
             new ReactComponentDependencyExtractor(),
             new ReactComponentRenderPropsExtractor(),
@@ -88,6 +89,22 @@ class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtracto
     }
 }
 
+class ReactComponentInitialStateExtractor extends AbstractComponentBasedExtractor {
+    extractFromComponent(component) {
+        let defValues = component.queryAst(
+            '[type="FunctionExpression"][id.name="getInitialState"] [type="ReturnStatement"] [properties] [type="Property"]'
+        );
+
+        if (!defValues) return;
+
+        return defValues.map(a => {
+            return {
+                name: a.getContents().key.name,
+                value: a.getContents().value.value // todo: extract expression should allow for methods
+            };
+        });
+    }
+}
 class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
