@@ -227,15 +227,19 @@ class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedE
 class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let renderReturnStatements = component.queryAst(
-            '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"]'
+            '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"][argument.callee.property.name="createElement"]'
         );
 
-        if (renderReturnStatements && renderReturnStatements.length > 0) {
-            let renderReturnStatment = renderReturnStatements[0];
-            let htmlStructure = this.parseCreateElement(renderReturnStatment.getContents().argument.arguments);
-            return htmlStructure;
+        if (!renderReturnStatements || renderReturnStatements.length === 0) return null;
+
+        if (renderReturnStatements.length === 1) {
+            // found 1 statement, perfect
+            return this.parseCreateElement(renderReturnStatements[0].getContents().argument.arguments);
         }
-        return null;
+
+        // multiple return statements found
+        // use the last statement found
+        return this.parseCreateElement(renderReturnStatements[renderReturnStatements.length-1].getContents().argument.arguments);
     }
 
     parseCreateElement(content) {
