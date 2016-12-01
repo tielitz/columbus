@@ -131,14 +131,22 @@ class AngularComponentPropertiesExtractor extends AbstractComponentBasedExtracto
 
         let expressions = controllerFunction.queryAst(
             '[id.name=controller][body]>[body]>[type=ExpressionStatement]'
-        );
+        ).filter(a => a.getContents().expression.type === 'AssignmentExpression'
+                && a.getContents().expression.right.type !== 'FunctionExpression');
 
-        return expressions.filter(a => a.getContents().expression.right.type !== 'FunctionExpression')
-            .map(a => {
+        let expressions2 = controllerFunction.queryAst(
+            '[id.name=controller][body]>[body]>[type=VariableDeclaration]'
+        ).filter(a => a.getContents().declarations[0].init.type === 'AssignmentExpression');
+
+        return expressions.map(a => {
                 return {
                     name: AstHelper.extractExpression(a.getContents().expression.left.property),
                     value: AstHelper.extractExpression(a.getContents().expression.right)
                 };
-            });
+            }).concat(expressions2.map(a => {
+                return {
+                    name: a.getContents().declarations[0].id.name
+                }
+            }));
     }
 }
