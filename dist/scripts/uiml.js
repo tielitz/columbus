@@ -11,11 +11,11 @@ class BehaviourRuleBuilder {
         };
     }
 
-    setEvent(className, partName) {
+    setEvent(className, partName, uniqid) {
         this.rule.condition = {
             _entity:  'event',
             class:    className,
-            partName: partName
+            partName: uniqid !== undefined ? uniqid : partName
         };
         return this;
     }

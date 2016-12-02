@@ -52,7 +52,7 @@ class ReactModelGenerator extends AbstractModelGenerator {
                     entry.properties.forEach(event => {
                         let behaviourRuleBuilder = new BehaviourRuleBuilder();
                         let rule = behaviourRuleBuilder
-                            .setEvent(event.event, entry.element) // TODO: missing any form of id
+                            .setEvent(event.event, entry.element, entry.uniqid) // TODO: missing any form of id
                             .addMethod(event.action.split('.')[0], event.action.split('.')[1], event.params)
                             .create();
                         componentModel.addBehaviourRule(rule);
@@ -101,7 +101,7 @@ class ReactModelGenerator extends AbstractModelGenerator {
         }
         let partEntry = {
             _entity:  parts.type === 'Identifier' ? 'reference' : 'part', // Identifier links to another component
-            id: parts.id || guid()
+            id: parts.uniqid || parts.id || guid()
         };
 
         // Add property which indicates where it should be stored

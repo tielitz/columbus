@@ -252,6 +252,10 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
         let parentContent = null;
         let childContent = [];
 
+        if (content[0]['myuniqid'] === undefined) {
+            content[0]['myuniqid'] = guid();
+        }
+
         // append first entry
         switch (content[0].type) {
             case 'Literal':
@@ -266,6 +270,7 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
             default:
                 throw new Error('Unexpected content[0] type ' + content[0].type);
         }
+        parentContent.uniqid = content[0]['myuniqid'];
 
         // If an object {} is present at the second place, check if it contains an id property
         if (content[1].type === 'ObjectExpression') {
@@ -318,6 +323,7 @@ class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtra
             .map(a => {
                 return {
                     element: this.extractEventSource(a.getContents().arguments[0]),
+                    uniqid: a.getContents().arguments[0].myuniqid,
                     properties: a.getContents().arguments[1].properties
                         .filter(b => this.isBehaviouralProperty(b))
                         .map(b => this.convertPropertyEntry(b))
