@@ -52,8 +52,11 @@ class ReactModelGenerator extends AbstractModelGenerator {
                     entry.properties.forEach(event => {
                         let behaviourRuleBuilder = new BehaviourRuleBuilder();
                         let rule = behaviourRuleBuilder
-                            .setEvent(event.event, entry.element, entry.uniqid) // TODO: missing any form of id
-                            .addMethod(event.action.split('.')[0], event.action.split('.')[1], event.params)
+                            .setEvent(event.event, entry.element, entry.uniqid)
+                            .addMethod(
+                                event.action.substring(0, event.action.lastIndexOf('.')),
+                                event.action.substring(event.action.lastIndexOf('.')+1), // splits the action on the last .
+                                event.params)
                             .create();
                         componentModel.addBehaviourRule(rule);
                     });
