@@ -50,6 +50,12 @@ angular.module('columbusApp', ['ngMaterial'])
                     $scope.githubRepositoryContainer = container;
                     $scope.githubFolderStructure = container.getFolderStructure();
 
+                    if (container.tree.length === 0) {
+                        // we found no files
+                        $scope.loading = false;
+                        alert('No matching files found');
+                    }
+
                     // iterate over all files. Parse ast and extract information grouped by file
 
                     let astParser = new AstParser($window.esprima);
