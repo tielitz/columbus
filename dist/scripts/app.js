@@ -18,10 +18,10 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.githubFolderStructure = null;
         $scope.currentSelectedFile = null;
 
-        $scope.gitHubOwner = 'tastejs'; // 'Mobility-Services-Lab';
+        $scope.gitHubOwner = 'tielitz'; // 'Mobility-Services-Lab';
         $scope.gitHubRepo = 'todomvc'; // 'TUMitfahrer-WebApp';
         $scope.gitHubSha = 'HEAD';
-        $scope.folderToParse = '^examples/react/js/.*\\.jsx$'; //'^src/components/.*\\.jsx$';
+        $scope.folderToParse = '^examples/react/.*\\.jsx$'; //'^src/components/.*\\.jsx$';
         $scope.loading = false;
 
         function reset() {
@@ -71,6 +71,10 @@ angular.module('columbusApp', ['ngMaterial'])
                         let ast = astParser.parse(parsedSourceCode);
 
                         if (ast instanceof ReactAst) {
+
+                            // Postprocessing semantic analyser
+                            JsxUniqueIdPostProcessor.process(ast);
+
                             modelExtractorChain = new ReactModelExtractorChain();
                             modelGenerator = new ReactModelGenerator();
                         }
