@@ -50,12 +50,15 @@ class ReactModelGenerator extends AbstractModelGenerator {
 
                     // each element can contain multiple events
                     entry.properties.forEach(event => {
+
+                        let method = this.splitMethodName(event.action);
+
                         let behaviourRuleBuilder = new BehaviourRuleBuilder();
                         let rule = behaviourRuleBuilder
                             .setEvent(event.event, entry.element, entry.uniqid)
                             .addMethod(
-                                event.action.substring(0, event.action.lastIndexOf('.')),
-                                event.action.substring(event.action.lastIndexOf('.')+1), // splits the action on the last .
+                                method.componentId,
+                                method.methodId, // splits the action on the last .
                                 event.params)
                             .create();
                         componentModel.addBehaviourRule(rule);
@@ -95,6 +98,24 @@ class ReactModelGenerator extends AbstractModelGenerator {
             let behaviourRuleBuilder = new BehaviourRuleBuilder();
             let rule = behaviourRuleBuilder.setEvent(events[i]).create();
             entry.addBehaviourRule(rule);
+        }
+    }
+
+    splitMethodName(elementName) {
+        // strip () at the end of the element nmae
+        if (elementName.indexOf('()') !== -1) {
+            elementName = elementName.substring(0, elementName.length-2);
+        }
+        let parts = elementName.split('.');
+
+        if (parts[parts.length-1] === 'bind') {
+            // in case the last element is bind, skip it
+            parts.splice(parts.length-1, 1); // remove last element
+        }
+
+        return {
+            componentId: parts.slice(0, parts.length-1).join('.'),
+            methodId:    parts[parts.length-1]
         }
     }
 
