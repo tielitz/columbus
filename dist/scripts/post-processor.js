@@ -33,3 +33,36 @@ class JsxUniqueIdPostProcessor extends AbstractPostProcessor {
         return ast;
     }
 }
+
+class ImportDependencyPostProcessor extends AbstractPostProcessor {
+
+    /**
+     * Replaces the ugly identifier introdec by babel when using import syntax.
+     * Replaces _react2 statements with React etc..
+     * @param  {Ast} ast
+     * @return {Ast}
+     */
+    static process(ast) {
+
+        let interops = ast.queryAst('[body]>[declarations]>[init.callee.name="_interopRequireDefault"]');
+
+        interops.forEach(interop => {
+            let identifier = interop.getContents().id.name;
+            let source = ImportDependencyPostProcessor.convertToNiceFormat(interop.getContents().init.arguments[0].name);
+
+            console.log('[ImportDependencyPostProcessor] replace '+identifier+' with '+source);
+
+            let res = ast.queryAst('[object.type="Identifier"][object.name="'+identifier+'"]');
+            res.forEach(a => {
+                a.getContents().object.name = source
+            });
+        });
+
+        return ast;
+    }
+
+    static convertToNiceFormat(str) {
+        // remove _ at the beginning, capitalize first char and add the rest
+        return str.slice(1).charAt(0).toUpperCase()+str.slice(2);
+    }
+}

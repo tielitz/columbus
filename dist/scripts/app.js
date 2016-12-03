@@ -89,6 +89,8 @@ angular.module('columbusApp', ['ngMaterial'])
                             modelGenerator = new PolymerModelGenerator();
                         }
 
+                        ImportDependencyPostProcessor.process(ast);
+
                         extractedAstContent[fileEntry.path] = ast.getContents();
                         extractedTokenContent[fileEntry.path] = (new TokenParser($window.esprima)).parse(parsedSourceCode);
                         try {
