@@ -77,7 +77,6 @@ class PolymerAst extends Ast {
             .map(a => new PolymerAst(a.getContents()));
     }
     getName() {
-        console.log('[PolymerAst] getName', this.getContents());
         let name = this.queryAst(
             '[type=Property][key.type=Identifier][key.name=is]'
         );
@@ -93,7 +92,6 @@ class AngularAst extends Ast {
         return components.map(a => new AngularAst(a.getContents()));
     }
     getName() {
-        console.log('[AngularAst] getName', this.getContents());
         return this.getContents().arguments[0].value;
     }
 }
@@ -144,7 +142,6 @@ class AstHelper {
     }
 
     static extractFunctionParameters(expr) {
-        console.log('[AstHelper] extractFunctionParameters', expr);
         if (expr.arguments === undefined || expr.arguments.length === 0) {
             return undefined;
         }
@@ -158,7 +155,6 @@ class AstHelper {
     }
 
     static isReactCode(code)  {
-        console.log('[isReactCode]', code);
         let checker = code.querySingleAst('[callee.property.name="createClass"]');
 
         if (!checker) return false;
@@ -173,13 +169,11 @@ class AstHelper {
     }
 
     static isAngularCode(code)  {
-        console.log('[isAngularCode]', code);
         let checker = code.querySingleAst('[type="ExpressionStatement"] [callee.property.name=component]');
         return checker !== null;
     }
 
     static isPolymerCode(code)  {
-        console.log('[isPolymerCode]', code);
         let checker = code.querySingleAst('[body] [type=CallExpression][callee.type="SequenceExpression"] [property.name="default"]');
 
         if (checker === null) {
