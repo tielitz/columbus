@@ -5,29 +5,6 @@
     <meta http-equiv="Cache-control" content="No-Cache">
     <!-- Angular Material style sheet -->
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-    <style>
-        .node {
-          stroke: #fff;
-          stroke-width: 1.5px;
-            cursor: move;
-        }
-
-        .link {
-          stroke: #999;
-          stroke-width: 3px;
-          stroke-opacity: 1;
-          marker-end: url(#end-arrow);
-        }
-
-        .label {
-            fill: white;
-            font-family: Verdana;
-            font-size: 25px;
-            text-anchor: middle;
-            cursor: move;
-        }
-    </style>
 </head>
 
 
@@ -98,7 +75,6 @@
                 <md-tabs layout="column" md-dynamic-height>
                     <md-tab id="syntax">
                         <md-tab-label>Syntax</md-tab-label>
-
                         <md-tab-body>
                             <editor type='json' content="syntaxContent" readonly></editor>
                         </md-tab-body>
@@ -148,13 +124,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
 
 <script src="https://unpkg.com/esprima@~3.1/dist/esprima.js"></script>
-<!-- <script src="//npmcdn.com/babel-standalone@6/babel.min.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.17.0/babel.min.js"></script>
 <script src="https://estools.github.io/esquery/esquery.min.js"></script>
-
-<!-- graph libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.js"></script>
-<script src="http://marvl.infotech.monash.edu/webcola/cola.v3.min.js"></script>
 
 <!-- Your application bootstrap  -->
 <script src="scripts/util.js"></script>
@@ -174,8 +145,10 @@
 <script src="scripts/angular-extractor.js"></script>
 <script src="scripts/angular-generator.js"></script>
 
+<script src="scripts/post-processor.js"></script>
+
 <script src="scripts/app.js"></script>
-<script src="scripts/github-api.js"></script>
+<script src="scripts/github-endpoint.js"></script>
 
 </body>
 </html>
