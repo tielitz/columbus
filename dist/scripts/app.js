@@ -18,7 +18,7 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.githubFolderStructure = null;
         $scope.currentSelectedFile = null;
 
-        $scope.gitHubOwner = 'tielitz'; // 'Mobility-Services-Lab';
+        $scope.gitHubOwner = 'tastejs'; // 'Mobility-Services-Lab';
         $scope.gitHubRepo = 'todomvc'; // 'TUMitfahrer-WebApp';
         $scope.gitHubSha = 'HEAD';
         $scope.folderToParse = '^examples/react/.*\\.jsx$'; //'^src/components/.*\\.jsx$';
@@ -53,7 +53,7 @@ angular.module('columbusApp', ['ngMaterial'])
                     if (container.tree.length === 0) {
                         // we found no files
                         $scope.loading = false;
-                        alert('No matching files found');
+                        alert('No files matching the regular expression found.');
                     }
 
                     // iterate over all files. Parse ast and extract information grouped by file
@@ -72,9 +72,16 @@ angular.module('columbusApp', ['ngMaterial'])
 
                         let fileEntry = container.tree[i];
 
-                        console.log('[parseGithub] processing ' + fileEntry.path);
-                        let parsedSourceCode = babelParser.transform(fileEntry.source);
-                        let ast = astParser.parse(parsedSourceCode);
+                        let parsedSourceCode = null;
+                        let ast = null;
+                        try {
+                            console.log('[parseGithub] processing ' + fileEntry.path);
+                            parsedSourceCode = babelParser.transform(fileEntry.source);
+                            ast = astParser.parse(parsedSourceCode);
+                        } catch (e) {
+                            console.warn('[parseGithub] could not process file', fileEntry.path);
+                            continue;
+                        }
 
                         if (ast instanceof ReactAst) {
 
@@ -122,6 +129,9 @@ angular.module('columbusApp', ['ngMaterial'])
 
                     // finished with everything
                     $scope.loading = false;
+                }, function errorCallback(response) {
+                    $scope.loading = false;
+                    alert('The GitHub repository could not be fetched.');
                 });
         }
     })

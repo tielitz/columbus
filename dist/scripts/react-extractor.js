@@ -307,7 +307,7 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
 class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let callExpressions = component.queryAst(
-            '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"] [type="CallExpression"]'
+            '[type="FunctionExpression"][id.name="render"] [type="CallExpression"]'
         );
 
         if (!callExpressions) return;

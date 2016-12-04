@@ -21,48 +21,58 @@
 
 <md-content class="md-padding">
     <div layout="row">
-        <md-card flex>
+        <md-card flex="33" flex-gt-md="50">
             <md-card-title flex="none">
               <md-card-title-text>
                 <span class="md-headline">JavaScript Code</span>
               </md-card-title-text>
             </md-card-title>
             <md-card-content>
-                <md-input-container class="md-block">
-                    <label>Github Owner</label>
-                    <input type="text" ng-model="gitHubOwner" required>
-                </md-input-container>
-                <md-input-container class="md-block">
-                    <label>Github Repository</label>
-                    <input type="text" ng-model="gitHubRepo" required>
-                </md-input-container>
-                <md-input-container class="md-block">
-                    <label>Github SHA</label>
-                    <input type="text" ng-model="gitHubSha" required>
-                </md-input-container>
-                <md-input-container class="md-block">
-                    <label>Regex</label>
-                    <input type="text" ng-model="folderToParse">
-                </md-input-container>
-                <md-button type="submit" ng-click="parseGithub()" class="md-raised md-primary">Parse</md-button>
-
-                <div ng-if="githubFolderStructure">
-                    <h3>Repository directory structure</h3>
-                    <md-input-container style="width:100%;">
-                        <label>Selected file {{ currentSelectedFile.path }}</label>
-                        <md-select ng-model="currentSelectedFile">
-                            <md-option><em>None</em></md-option>
-                            <md-option ng-repeat="entry in githubRepositoryContainer.getAllEntries()" ng-value="entry">
-                                {{ entry.path }}
-                            </md-option>
-                        </md-select>
-                    </md-input-container>
-                    <div ng-if="currentSelectedFile">
-                        <h3>{{ currentSelectedFile.path }}</h3>
-                        <editor type='javascript' content="currentSelectedFile.source" readonly></editor>
-                    </div>
-                </div>
-
+            <md-tabs layout="column" md-dynamic-height>
+                <md-tab id="input">
+                    <md-tab-label>Import</md-tab-label>
+                    <md-tab-body>
+                        <br>
+                        <md-input-container class="md-block">
+                            <label>Github Owner</label>
+                            <input type="text" ng-model="gitHubOwner" required>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Github Repository</label>
+                            <input type="text" ng-model="gitHubRepo" required>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Github SHA</label>
+                            <input type="text" ng-model="gitHubSha" required>
+                        </md-input-container>
+                        <md-input-container class="md-block">
+                            <label>Regex</label>
+                            <input type="text" ng-model="folderToParse">
+                        </md-input-container>
+                        <md-button type="submit" ng-click="parseGithub()" class="md-raised md-primary">Parse</md-button>
+                    </md-tab-body>
+                </md-tab>
+                <md-tab id="repcontents">
+                    <md-tab-label>Contents</md-tab-label>
+                    <md-tab-body>
+                        <br>
+                        <h3>Repository directory structure</h3>
+                        <div ng-if="githubFolderStructure">
+                            <md-input-container style="width:100%;">
+                                <label>Selected file {{ currentSelectedFile.path }}</label>
+                                <md-select ng-model="currentSelectedFile">
+                                    <md-option><em>None</em></md-option>
+                                    <md-option ng-repeat="entry in githubRepositoryContainer.getAllEntries()" ng-value="entry">
+                                        {{ entry.path }}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                            <div ng-if="currentSelectedFile">
+                                <h3>{{ currentSelectedFile.path }}</h3>
+                                <editor type='javascript' content="currentSelectedFile.source" readonly></editor>
+                            </div>
+                        </div>
+                    </md-tab-body>
             </md-card-content>
         </md-card>
         <md-card flex >
@@ -76,31 +86,36 @@
                     <md-tab id="syntax">
                         <md-tab-label>Syntax</md-tab-label>
                         <md-tab-body>
+                            <br>
                             <editor type='json' content="syntaxContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="tokens">
                         <md-tab-label>Tokens</md-tab-label>
                         <md-tab-body>
+                            <br>
                             <editor type='json' content="tokensContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="infobase">
                         <md-tab-label>Info Base</md-tab-label>
                         <md-tab-body>
+                            <br>
                             <editor type='json' content="infoBaseContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="dependencies">
                         <md-tab-label>Dependencies</md-tab-label>
                         <md-tab-body>
+                            <br>
                             <editor type='json' content="dependencyGraph" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="infobase">
                         <md-tab-label>Model</md-tab-label>
                         <md-tab-body>
-                            <a href="images/ViewModel.png" target="__blank" style="margin-left:10px;">Show model</a>
+                            <br>
+                            <a href="images/view-model.jpg" target="__blank" style="margin-left:10px;">Show model</a>
                             <editor type='json' content="modelContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
