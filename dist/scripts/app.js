@@ -18,11 +18,12 @@ angular.module('columbusApp', ['ngMaterial'])
         $scope.githubFolderStructure = null;
         $scope.currentSelectedFile = null;
 
-        $scope.gitHubOwner = 'tastejs'; // 'Mobility-Services-Lab';
-        $scope.gitHubRepo = 'todomvc'; // 'TUMitfahrer-WebApp';
+        $scope.gitHubOwner = 'tielitz'; // 'Mobility-Services-Lab';
+        $scope.gitHubRepo = 'columbus-react-example'; // 'TUMitfahrer-WebApp';
         $scope.gitHubSha = 'HEAD';
-        $scope.folderToParse = '^examples/react/.*\\.jsx$'; //'^src/components/.*\\.jsx$';
+        $scope.folderToParse = '^components/.*\\.jsx$'; //'^src/components/.*\\.jsx$';
         $scope.loading = false;
+        $scope.parsingErrors = [];
 
         function reset() {
             $scope.jsContent = '';
@@ -35,6 +36,16 @@ angular.module('columbusApp', ['ngMaterial'])
             $scope.githubRepositoryContainer = null;
             $scope.githubFolderStructure = null;
             $scope.currentSelectedFile = null;
+
+            $scope.parsingErrors = [];
+        }
+
+        function addOutputLog(_msg, _type) {
+            console.log('addOutputLog', _msg, _type);
+            $scope.parsingErrors.push({
+                msg: _msg,
+                type: _type !== undefined ? _type : 'warn'
+            });
         }
 
         $scope.parseGithub = function parseGithub() {
@@ -80,6 +91,7 @@ angular.module('columbusApp', ['ngMaterial'])
                             ast = astParser.parse(parsedSourceCode);
                         } catch (e) {
                             console.warn('[parseGithub] could not process file', fileEntry.path);
+                            addOutputLog('Unable to process file '+fileEntry.path, 'error');
                             continue;
                         }
 
@@ -112,7 +124,15 @@ angular.module('columbusApp', ['ngMaterial'])
                         } catch (e) {
                             // something went wrong with parsing that file
                             console.warn('Could not parse file ' + fileEntry.path, e);
+                            addOutputLog('Unable to process file '+fileEntry.path, 'error');
                         }
+
+                        // check for errors in the modelExtractor
+                        modelExtractorChain.getProcessErrors().forEach(a => {
+                            // add error as warnings
+                            addOutputLog('Failure to process the file '+fileEntry.path+' with the '+a.extractor);
+                        });
+
                     }
                     $scope.syntaxContent = JSON.stringify(extractedAstContent, null, '\t');
                     $scope.tokensContent = JSON.stringify(extractedTokenContent, null, '\t');

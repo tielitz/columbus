@@ -10,6 +10,7 @@ class PolymerModelExtractorChain {
             new PolymerAddEventListenerExtractor()
         ];
         console.log('[PolymerModelExtractorChain] registered '+this.extractors.length+' extractors');
+        this.processErrors = [];
     }
 
     /**
@@ -26,11 +27,19 @@ class PolymerModelExtractorChain {
 
                 output[extractorDesc] = extractorOut;
             } catch (e) {
+                this.processErrors.push({
+                    extractor: extractor.descriptor(),
+                    expection: e
+                });
                 console.warn('[ModelExtractorChain] something went wrong with '+extractor.descriptor(), e);
             }
         }
 
         return output;
+    }
+
+    getProcessErrors() {
+        return this.processErrors;
     }
 }
 

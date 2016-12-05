@@ -5,6 +5,27 @@
     <meta http-equiv="Cache-control" content="No-Cache">
     <!-- Angular Material style sheet -->
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.css">
+    <style>
+        .errorBubbles ul {
+            padding: 0;
+            list-style-type: none;
+        }
+        .errorBubbles li {
+            padding:10px;
+            margin: 0 0 3px 0;
+        }
+        .errorBubbles li.type-error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            font-weight: 700;
+        }
+        .errorBubbles li.type-warn {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+        }
+    </style>
 </head>
 
 
@@ -114,7 +135,11 @@
                     <md-tab id="infobase">
                         <md-tab-label>Model</md-tab-label>
                         <md-tab-body>
-                            <br>
+                            <div class="errorBubbles" ng-if="parsingErrors.length > 0">
+                                <ul>
+                                    <li ng-repeat="error in parsingErrors" class="type-{{ error.type }}">{{ error.msg }}</li>
+                                </ul>
+                            </div>
                             <a href="images/view-model.png" target="__blank" style="margin-left:10px;">Show model</a>
                             <editor type='json' content="modelContent" readonly></editor>
                         </md-tab-body>
