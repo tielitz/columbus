@@ -17,6 +17,10 @@ class PolymerModelExtractorChain extends SharedModelExtractorChain {
 // ########################################################################
 // ########################################################################
 
+/**
+ * Extracts the name of the components
+ * Remnant before the method was implemented in the Ast
+ */
 class PolymerComponentNameExtractor extends AbstractExtractor {
     descriptor() {
         return 'components';
@@ -27,6 +31,9 @@ class PolymerComponentNameExtractor extends AbstractExtractor {
     }
 }
 
+/**
+ * Extracts all properties definitions in the properties section
+ */
 class PolymerComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let properties = component.queryAst(
@@ -49,7 +56,9 @@ class PolymerComponentPropertiesExtractor extends AbstractComponentBasedExtracto
     }
 }
 
-
+/**
+ * Extracts all function declarations
+ */
 class PolymerComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
@@ -67,6 +76,9 @@ class PolymerComponentFunctionsExtractor extends AbstractComponentBasedExtractor
     }
 }
 
+/**
+ * Extracts all listeners declarations inside the listeners section
+ */
 class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let listeners = component.queryAst(
@@ -92,6 +104,9 @@ class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor
     }
 }
 
+/**
+ * Extracts all events and their methods that are declared using addEventListener
+ */
 class PolymerAddEventListenerExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let listeners = component.queryAst('[type=CallExpression][callee.property.name=addEventListener]');

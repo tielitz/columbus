@@ -17,6 +17,10 @@ class AngularModelExtractorChain extends SharedModelExtractorChain {
 // ########################################################################
 // ########################################################################
 
+/**
+ * Extracts the name of the components
+ * Remnant before the method was implemented in the Ast
+ */
 class AngularComponentNameExtractor extends AbstractExtractor {
     descriptor() {
         return 'components';
@@ -27,6 +31,9 @@ class AngularComponentNameExtractor extends AbstractExtractor {
     }
 }
 
+/**
+ * Extracts all component bindings
+ */
 class AngularComponentBindingsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let properties = component.querySingleAst(
@@ -47,6 +54,9 @@ class AngularComponentBindingsExtractor extends AbstractComponentBasedExtractor 
     }
 }
 
+/**
+ * Extracts dependencies to other components from the require section
+ */
 class AngularComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let dependencies = component.querySingleAst(
@@ -64,7 +74,9 @@ class AngularComponentDependencyExtractor extends AbstractComponentBasedExtracto
     }
 }
 
-
+/**
+ * Extracts all defined functions in the controller
+ */
 class AngularComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
 
@@ -96,6 +108,10 @@ class AngularComponentFunctionsExtractor extends AbstractComponentBasedExtractor
     }
 }
 
+/**
+ * Extracts all properties of the component that are defined in the controller function with this. and any other object
+ * for that matter. Fix me please
+ */
 class AngularComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
 

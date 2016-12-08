@@ -24,6 +24,10 @@ class ReactModelExtractorChain extends SharedModelExtractorChain {
 // ########################################################################
 // ########################################################################
 
+/**
+ * Extracts the name of the components
+ * Remnant before the method was implemented in the Ast
+ */
 class ReactComponentNameExtractor extends AbstractExtractor {
     descriptor() {
         return 'components';
@@ -41,6 +45,9 @@ class ReactComponentNameExtractor extends AbstractExtractor {
     }
 }
 
+/**
+ * Extracts the properties defined in the propTypes section of the component
+ */
 class ReactComponentProptypesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let propTypes = component.queryAst(
@@ -59,6 +66,9 @@ class ReactComponentProptypesExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
+/**
+ * Extracts all properties that have a default value assigned
+ */
 class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let defValues = component.queryAst(
@@ -76,6 +86,9 @@ class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtracto
     }
 }
 
+/**
+ * Extracts all state properties which are defined in the getInitialState method
+ */
 class ReactComponentInitialStateExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let defValues = component.queryAst(
@@ -93,6 +106,9 @@ class ReactComponentInitialStateExtractor extends AbstractComponentBasedExtracto
     }
 }
 
+/**
+ * Extracts all declared functions
+ */
 class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
@@ -110,6 +126,9 @@ class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     }
 }
 
+/**
+ * Extracts all dependencies to other components and libraries in the JSX tags
+ */
 class ReactComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let reactCreateElementTags = component.queryAst(
@@ -122,6 +141,9 @@ class ReactComponentDependencyExtractor extends AbstractComponentBasedExtractor 
     }
 }
 
+/**
+ * Extracts all this.props. variable usages in the render statement
+ */
 class ReactComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let props = component.queryAst(
@@ -136,6 +158,10 @@ class ReactComponentRenderPropsExtractor extends AbstractComponentBasedExtractor
     }
 }
 
+/**
+ * Extracts all CSS style properties that are defined in the template
+ * This extractor is not used during the model generation
+ */
 class ReactComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let styles = component.queryAst(
@@ -159,6 +185,10 @@ class ReactComponentRenderStyleExtractor extends AbstractComponentBasedExtractor
     }
 }
 
+/**
+ * Extracts the possible return types of each function
+ * This extractor is not used during the model generation
+ */
 class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let functions = component.queryAst(
@@ -203,7 +233,9 @@ class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedE
     }
 }
 
-// Limiting  extractor to first return statement
+/**
+ * Extracts the template structure of the last return statement in the render function
+ */
 class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let renderReturnStatements = component.queryAst(
@@ -222,8 +254,13 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
         return this.parseCreateElement(renderReturnStatements[renderReturnStatements.length-1].getContents().argument.arguments);
     }
 
+    /**
+     * Recursively convert the JSX template structure into a view model compliant one
+     *
+     * @param  {Object} content Current node
+     * @return {Object}         Converted node
+     */
     parseCreateElement(content) {
-
         console.log('[ReactComponentRenderHtmlExtractor] parseCreateElement', content);
 
         // element 0 contains key
@@ -284,6 +321,9 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
     }
 }
 
+/**
+ * Extracts all function invocations inside the render statement
+ */
 class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let callExpressions = component.queryAst(
@@ -328,6 +368,9 @@ class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtra
     }
 }
 
+/**
+ * Extracts all definitions of a life cycle function
+ */
 class ReactComponentLifeCycleExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
