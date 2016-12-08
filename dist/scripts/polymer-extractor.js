@@ -1,7 +1,9 @@
 'use strict';
 
-class PolymerModelExtractorChain {
+class PolymerModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
+        super();
+
         this.extractors = [
             new PolymerComponentNameExtractor(),
             new PolymerComponentPropertiesExtractor(),
@@ -9,37 +11,6 @@ class PolymerModelExtractorChain {
             new PolymerComponentListenersExtractor(),
             new PolymerAddEventListenerExtractor()
         ];
-        console.log('[PolymerModelExtractorChain] registered '+this.extractors.length+' extractors');
-        this.processErrors = [];
-    }
-
-    /**
-     * @param  {Ast}      input
-     * @return {[object]}
-     */
-    apply(input) {
-        let output = {};
-
-        for (let extractor of this.extractors) {
-            try {
-                let extractorDesc = extractor.descriptor();
-                let extractorOut = extractor.extract(input);
-
-                output[extractorDesc] = extractorOut;
-            } catch (e) {
-                this.processErrors.push({
-                    extractor: extractor.descriptor(),
-                    expection: e
-                });
-                console.warn('[ModelExtractorChain] something went wrong with '+extractor.descriptor(), e);
-            }
-        }
-
-        return output;
-    }
-
-    getProcessErrors() {
-        return this.processErrors;
     }
 }
 

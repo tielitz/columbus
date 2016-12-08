@@ -1,7 +1,9 @@
 'use strict';
 
-class ReactModelExtractorChain {
+class ReactModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
+        super();
+
         this.extractors = [
             new ReactComponentNameExtractor(),
             new ReactComponentProptypesExtractor(),
@@ -16,37 +18,6 @@ class ReactModelExtractorChain {
             new ReactComponentRenderBehaviourExtractor(),
             new ReactComponentLifeCycleExtractor()
         ];
-        console.log('[ReactModelExtractorChain] registered '+this.extractors.length+' extractors');
-        this.processErrors = [];
-    }
-
-    /**
-     * @param  {Ast}      input
-     * @return {[object]}
-     */
-    apply(input) {
-        let output = {};
-
-        for (let extractor of this.extractors) {
-            try {
-                let extractorDesc = extractor.descriptor();
-                let extractorOut = extractor.extract(input);
-
-                output[extractorDesc] = extractorOut;
-            } catch (e) {
-                this.processErrors.push({
-                    extractor: extractor.descriptor(),
-                    expection: e
-                });
-                console.warn('[ModelExtractorChain] something went wrong with '+extractor.descriptor(), e);
-            }
-        }
-
-        return output;
-    }
-
-    getProcessErrors() {
-        return this.processErrors;
     }
 }
 

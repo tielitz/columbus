@@ -1,15 +1,11 @@
 'use strict';
 
 /**
- * Abstract class for t he extractor chains. Had problems with inheritence and thats why the concrete classes dont
- * extend this class anymore.
+ * Abstract class for the extractor chains.
  */
 class SharedModelExtractorChain {
     constructor() {
-        this.extractors = [
-            new FileImportExtractor(),
-        ];
-        console.log('[SharedModelExtractorChain] registered '+this.extractors.length+' extractors');
+        this.extractors = [];
         this.processErrors = [];
     }
 
@@ -19,6 +15,8 @@ class SharedModelExtractorChain {
      * @return {Object}         The information base filled with entries extracted from the source code
      */
     apply(input) {
+        console.log('['+this.constructor.name+'] registered '+this.extractors.length+' extractors');
+
         let output = {};
 
         for (let extractor of this.extractors) {
@@ -35,7 +33,7 @@ class SharedModelExtractorChain {
                     extractor: extractor.descriptor(),
                     expection: e
                 });
-                console.warn('[ModelExtractorChain] something went wrong with '+extractor.descriptor(), e);
+                console.warn('['+this.constructor.name+'] something went wrong with '+extractor.descriptor(), e);
             }
         }
 
