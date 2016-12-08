@@ -138,7 +138,7 @@ class ReactModelGenerator extends AbstractModelGenerator {
 
             case 'Literal':
             case 'MemberExpression':
-                componentModel.addSingleStyle(partEntry['id'], parts.value);
+                componentModel.addVariable(partEntry['id'], undefined, parts.value);
                 break;
 
             case 'CallExpression':

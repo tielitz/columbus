@@ -1,9 +1,26 @@
 'use strict';
 
+/**
+ * Abstract base class for the model generator
+ * Child classes must provide an implementation for the generate method
+ */
 class AbstractModelGenerator {
+    /**
+     * Creates a framework specific view model of the information provided in the information base
+     *
+     * @param  {Object} informationBase The information base generated from the information extraction
+     * @return {Object}                 View models
+     */
     generate(informationBase) {
         throw new Error('Method not implemented');
     }
+
+    /**
+     * Creates a dependency graph with the information provided by the FileImportExtractor
+     *
+     * @param  {Object} informationBase The information base generated from the information extraction
+     * @return {Object}                 A list of all components and dependencies defined per file
+     */
     createDependencyGraphModel(informationBase) {
         let model = {};
 
@@ -18,44 +35,10 @@ class AbstractModelGenerator {
     }
 }
 
-class ComponentModelUtil {
-    static getEmptyModel() {
-        return {
-            structure: [],
-            content: [],
-            behaviour: [],
-            style: [],
-        };
-    }
-
-    static getComponentModel(component) {
-        let model = this.getEmptyModel();
-        model.name = component;
-        return model;
-    }
-}
-
-class ObjectUtil {
-    static getValues(obj) {
-        let val = [];
-        for (let prop in obj) {
-            if (obj[prop] instanceof Array) { // need to test Array first because an Array is also an Object
-                val = val.concat(obj[prop]);
-            } else if (obj[prop] instanceof Object) {
-                val.push(this.getValues(obj[prop]));
-            } else {
-                val.push(obj[prop]);
-            }
-        }
-        return val;
-    }
-
-    static getUniqueValues(obj) {
-        let vals = ObjectUtil.getValues(obj);
-        return vals.filter((el, index, self) => self.indexOf(el) === index);
-    }
-}
-
+/**
+ * Builder class for the component model
+ * The model generator adds information piece by piece to construct the view model
+ */
 class ComponentModel {
     constructor(name) {
         this.name = name;
@@ -65,13 +48,13 @@ class ComponentModel {
         this.style = {};
     }
 
-    addComponentDependency(dependency) {
-        if (this.structure.dependencies === undefined) {
-            this.structure.dependencies = [];
-        }
-        this.structure.dependencies.push(dependency);
-    }
-
+    /**
+     * Adds additional parts to the view model
+     * The parts must already be in the correct format which does not really make sense
+     * The component model should be able to verify the structure or at least convert the input to the correct format
+     *
+     * @param {Array} parts
+     */
     addParts(parts) {
         if (this.structure.parts === undefined) {
             this.structure.parts = [];
@@ -80,16 +63,24 @@ class ComponentModel {
         this.structure.parts.push(parts);
     }
 
+    /**
+     * Adds another property to the list if it does not exist yet. If it does, then the information is completed
+     * Meaning that every information passed to the method overwrite whatever has been declared before
+     *
+     * @param {String} name  Name of the property
+     * @param {String} type  Type of the property
+     * @param {String} value Default value of the property
+     */
     addVariable(name, type, value) {
         if (this.style.properties === undefined) {
             this.style.properties = [];
         }
 
-        // check if variable already exists
+        // check if property already exists
         let entry = this.style.properties.find(el => el.name === name);
 
         if (entry === undefined) {
-            // new variable, add to model
+            // new property, add to model
             this.style.properties.push({
                 _entity: 'property',
                 name: name,
@@ -103,51 +94,17 @@ class ComponentModel {
         }
     }
 
-    addFunction(name, params, returnType) {
-        if (this.behaviour.functions === undefined) {
-            this.behaviour.functions = [];
-        }
-
-        this.behaviour.functions.push({
-            _entity: 'function',
-            name: name,
-            params: params,
-            returnType: returnType
-        });
-    }
-
-    addSingleStyle(name, value) {
-        if (this.style.properties === undefined) {
-            this.style.properties = [];
-        }
-        this.style.properties.push({
-            name: name,
-            value: value
-        });
-    }
-    addMultipleStyles(styles) {
-        if (this.style.properties === undefined) {
-            this.style.properties = [];
-        }
-
-        let node = [];
-
-        styles.forEach(style => {
-            node.push({
-                name: style.name,
-                value: style.value
-            });
-        });
-
-        this.style.properties.push(node);
-    }
-
+    /**
+     * Adds another rule to the behaviour which has been created by the BehaviourRuleBuilder
+     * Only adds events that dont exist yet. If it does, the calls are appended to the existing event
+     *
+     * @param {Object} rule The rule entity
+     */
     addBehaviourRule(rule) {
         if (this.behaviour.rules === undefined) {
             this.behaviour.rules = [];
         }
 
-        console.log('[ComponentModel] addBehaviourRule', rule, this.behaviour.rules);
         // check if the event already exists
         let index = this.behaviour.rules.findIndex(a =>
             // search for a rule with the same condition
@@ -155,16 +112,22 @@ class ComponentModel {
         );
 
         if (index >= 0) {
-            // append the action at the given index
+            // append the action to the existing rule event
             if (this.behaviour.rules[index].actions === undefined) {
                 this.behaviour.rules[index].actions = [];
             }
             this.behaviour.rules[index].actions = this.behaviour.rules[index].actions.concat(rule.actions);
         } else {
+            // Addnew rule
             this.behaviour.rules.push(rule);
         }
     }
 
+    /**
+     * Sort of a generate or build method
+     *
+     * @return {Object} The view model
+     */
     toObject() {
         return {
             structure: this.structure,
@@ -175,6 +138,9 @@ class ComponentModel {
     }
 }
 
+/**
+ * This class holds multiple ComponentModels under their component name
+ */
 class ComponentModelContainer {
     constructor() {
         this.models = {};

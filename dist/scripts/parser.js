@@ -1,9 +1,24 @@
 'use strict';
 
+/**
+ * Compiles the source code into a framework specific AST
+ */
 class AstParser {
+
+    /**
+     * @param  {Esprima} parser Esprima parsing library
+     */
     constructor(parser) {
         this.parser = parser;
     }
+
+    /**
+     * Compiles the source code into a framework specific AST by checking
+     * which type of component definition exists.
+     *
+     * @param  {string} code The source code which should be processed
+     * @return {Ast}         Compiled Ast
+     */
     parse(code) {
         let ast = new Ast(this.parser.parse(code));
 
@@ -22,45 +37,69 @@ class AstParser {
 
         return new Ast(ast);
     }
-    parseReact(code) {
-        let ast = this.parser.parse(code);
-        return new ReactAst(ast);
-    }
-    parsePolymer(code) {
-        let ast = this.parser.parse(code);
-        return new PolymerAst(ast);
-    }
-    parseAngular(code) {
-        let ast = this.parser.parse(code);
-        return new AngularAst(ast);
-    }
 }
 
+
+/**
+ * Tokenises the source code
+ */
 class TokenParser {
+
+    /**
+     * @param  {Esprima} parser Esprima parsing library
+     */
     constructor(parser) {
         this.parser = parser;
     }
+    /**
+     * Performs Esprima's tokenisation
+     *
+     * @param  {String} code The source code which should be processed
+     * @return {Object}      Tokenised source code
+     */
     parse(code) {
         return this.parser.tokenize(code);
     }
 }
 
-class JsxParser {
-    transform(code) {
-        let transformed = Babel.transform(code, {
-            presets: ['es2015', 'react']
-        });
-        console.log('[JsxParser] transformed ', transformed.code);
-        return transformed.code;
-    }
-}
 
+/**
+ * Transforms the source code into EcmaScript 5 syntax
+ */
 class BabelParser {
+
+    /**
+     * Uses Babel to transform the source code into ECMAScript 5 syntax
+     *
+     * @param  {String} code Source code
+     * @return {String}      Parsed source code
+     */
     transform(code) {
         let transformed = Babel.transform(code, {
             presets: ['es2015']
         });
         console.log('[Babel] transform ', transformed.code);
+        return transformed.code;
+    }
+}
+
+/**
+ * Transforms JSX syntax into valid source code
+ */
+class JsxParser extends BabelParser {
+
+    /**
+     * Uses Babel to transform the source code into ECMAScript 5 syntax
+     * and converts JSX syntax to JavaScript
+     *
+     * @param  {String} code Source code
+     * @return {String}      Parsed source code
+     */
+    transform(code) {
+        let transformed = Babel.transform(code, {
+            presets: ['es2015', 'react']
+        });
+        console.log('[JsxParser] transformed ', transformed.code);
         return transformed.code;
     }
 }
