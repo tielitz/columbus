@@ -39,7 +39,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js",
-    "prestart": "npm install",
     "start": "http-server -a localhost -p 8000 -c-1 ./dist"
   }
 }
