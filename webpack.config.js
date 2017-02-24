@@ -10,7 +10,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
 
     entry: {
-        'vendor': ['angular','angular-animate','angular-aria','angular-messages','angular-material','angular-material-icons'],
+        'vendor': ['angular','angular-animate','angular-aria','angular-messages','angular-material','angular-material-icons','brace','esprima','esquery'],
         'app': path.resolve(__dirname,'src/app.js')
     },
     output: {
@@ -18,6 +18,9 @@ module.exports = {
         filename: 'scripts/[name].js'
     },
     module: {
+        preLoaders: [
+            { test: /\.json$/, exclude: /node_modules/, loader: 'json'},
+        ],
         loaders: [
             {
                 test: /\.js$/,
@@ -38,7 +41,6 @@ module.exports = {
             }
         ]
     },
-
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({
             name: ['app', 'vendor']

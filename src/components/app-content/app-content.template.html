@@ -1,4 +1,4 @@
-<md-progress-linear md-mode="indeterminate" ng-disabled="!loading"></md-progress-linear>
+<md-progress-linear md-mode="indeterminate" ng-disabled="!$ctrl.loading"></md-progress-linear>
 
 <md-content class="md-padding">
     <div layout="row">
@@ -16,21 +16,21 @@
                             <br>
                             <md-input-container class="md-block">
                                 <label>Github Owner</label>
-                                <input type="text" ng-model="gitHubOwner" required>
+                                <input type="text" ng-model="$ctrl.gitHubOwner" required>
                             </md-input-container>
                             <md-input-container class="md-block">
                                 <label>Github Repository</label>
-                                <input type="text" ng-model="gitHubRepo" required>
+                                <input type="text" ng-model="$ctrl.gitHubRepo" required>
                             </md-input-container>
                             <md-input-container class="md-block">
                                 <label>Github SHA</label>
-                                <input type="text" ng-model="gitHubSha" required>
+                                <input type="text" ng-model="$ctrl.gitHubSha" required>
                             </md-input-container>
                             <md-input-container class="md-block">
                                 <label>Regex</label>
-                                <input type="text" ng-model="folderToParse">
+                                <input type="text" ng-model="$ctrl.folderToParse">
                             </md-input-container>
-                            <md-button type="submit" ng-click="parseGithub()" class="md-raised md-primary">Parse</md-button>
+                            <md-button type="submit" ng-click="$ctrl.parseGithub()" class="md-raised md-primary">Parse</md-button>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="repcontents">
@@ -54,40 +54,40 @@
                         <md-tab-label>Syntax</md-tab-label>
                         <md-tab-body>
                             <br>
-                            <editor type='json' content="syntaxContent" readonly></editor>
+                            <editor type='json' content="$ctrl.syntaxContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="tokens">
                         <md-tab-label>Tokens</md-tab-label>
                         <md-tab-body>
                             <br>
-                            <editor type='json' content="tokensContent" readonly></editor>
+                            <editor type='json' content="$ctrl.tokensContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="infobase">
                         <md-tab-label>Info Base</md-tab-label>
                         <md-tab-body>
                             <br>
-                            <editor type='json' content="infoBaseContent" readonly></editor>
+                            <editor type='json' content="$ctrl.infoBaseContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="dependencies">
                         <md-tab-label>Dependencies</md-tab-label>
                         <md-tab-body>
                             <br>
-                            <editor type='json' content="dependencyGraph" readonly></editor>
+                            <editor type='json' content="$ctrl.dependencyGraph" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                     <md-tab id="infobase">
                         <md-tab-label>Model</md-tab-label>
                         <md-tab-body>
-                            <div class="error-bubble" ng-if="parsingErrors.length > 0">
+                            <div class="error-bubble" ng-if="$ctrl.parsingErrors.length > 0">
                                 <ul>
-                                    <li ng-repeat="error in parsingErrors" class="type-{{ error.type }}">{{ error.msg }}</li>
+                                    <li ng-repeat="error in $ctrl.parsingErrors" class="type-{{ error.type }}">{{ error.msg }}</li>
                                 </ul>
                             </div>
 
-                            <editor type='json' content="modelContent" readonly></editor>
+                            <editor type='json' content="$ctrl.modelContent" readonly></editor>
                         </md-tab-body>
                     </md-tab>
                 </md-tabs>
