@@ -1,0 +1,97 @@
+<md-progress-linear md-mode="indeterminate" ng-disabled="!$ctrl.loading"></md-progress-linear>
+
+<md-content class="md-padding">
+    <div layout="row">
+        <md-card flex="33" flex-gt-md="50">
+            <md-card-title flex="none">
+                <md-card-title-text>
+                    <span class="md-headline">JavaScript Code</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-tabs layout="column" md-dynamic-height>
+                    <md-tab id="input">
+                        <md-tab-label>Import</md-tab-label>
+                        <md-tab-body>
+                            <br>
+                            <md-input-container class="md-block">
+                                <label>Github Owner</label>
+                                <input type="text" ng-model="$ctrl.gitHubOwner" required>
+                            </md-input-container>
+                            <md-input-container class="md-block">
+                                <label>Github Repository</label>
+                                <input type="text" ng-model="$ctrl.gitHubRepo" required>
+                            </md-input-container>
+                            <md-input-container class="md-block">
+                                <label>Github SHA</label>
+                                <input type="text" ng-model="$ctrl.gitHubSha" required>
+                            </md-input-container>
+                            <md-input-container class="md-block">
+                                <label>Regex</label>
+                                <input type="text" ng-model="$ctrl.folderToParse">
+                            </md-input-container>
+                            <md-button type="submit" ng-click="$ctrl.parseGithub()" class="md-raised md-primary">Parse</md-button>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="repcontents">
+                        <md-tab-label>Contents</md-tab-label>
+                        <md-tab-body>
+                            <br>
+                            <h3>Repository directory structure</h3>
+
+                        </md-tab-body>
+            </md-card-content>
+        </md-card>
+        <md-card flex >
+            <md-card-title flex="none">
+                <md-card-title-text>
+                    <span class="md-headline">Model</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-tabs layout="column" md-dynamic-height>
+                    <md-tab id="syntax">
+                        <md-tab-label>Syntax</md-tab-label>
+                        <md-tab-body>
+                            <br>
+                            <editor type='json' content="$ctrl.syntaxContent" readonly></editor>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="tokens">
+                        <md-tab-label>Tokens</md-tab-label>
+                        <md-tab-body>
+                            <br>
+                            <editor type='json' content="$ctrl.tokensContent" readonly></editor>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="infobase">
+                        <md-tab-label>Info Base</md-tab-label>
+                        <md-tab-body>
+                            <br>
+                            <editor type='json' content="$ctrl.infoBaseContent" readonly></editor>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="dependencies">
+                        <md-tab-label>Dependencies</md-tab-label>
+                        <md-tab-body>
+                            <br>
+                            <editor type='json' content="$ctrl.dependencyGraph" readonly></editor>
+                        </md-tab-body>
+                    </md-tab>
+                    <md-tab id="infobase">
+                        <md-tab-label>Model</md-tab-label>
+                        <md-tab-body>
+                            <div class="error-bubble" ng-if="$ctrl.parsingErrors.length > 0">
+                                <ul>
+                                    <li ng-repeat="error in $ctrl.parsingErrors" class="type-{{ error.type }}">{{ error.msg }}</li>
+                                </ul>
+                            </div>
+
+                            <editor type='json' content="$ctrl.modelContent" readonly></editor>
+                        </md-tab-body>
+                    </md-tab>
+                </md-tabs>
+            </md-card-content>
+        </md-card>
+    </div>
+</md-content>

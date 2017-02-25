@@ -3,7 +3,7 @@
 /**
  * Abstract class for the extractor chains.
  */
-class SharedModelExtractorChain {
+export default class SharedModelExtractorChain {
     constructor() {
         this.extractors = [];
         this.processErrors = [];
@@ -55,7 +55,7 @@ class SharedModelExtractorChain {
 /**
  * Base class of all extraction rules
  */
-class AbstractExtractor {
+export class AbstractExtractor {
 
     /**
      * Descriptor which is used in the information base as the unique identifier
@@ -92,7 +92,7 @@ class AbstractExtractor {
 /**
  * Base extractor which preselects all components and handels each one by one
  */
-class AbstractComponentBasedExtractor extends AbstractExtractor {
+export class AbstractComponentBasedExtractor extends AbstractExtractor {
 
     /**
      * Actual extract method which receives the AST as input and has to extract information
@@ -123,7 +123,7 @@ class AbstractComponentBasedExtractor extends AbstractExtractor {
 /**
  * General extraction rule which extracts all required / imported dependencies at the top of the file
  */
-class FileImportExtractor extends AbstractExtractor {
+export class FileImportExtractor extends AbstractExtractor {
     extract(input) {
         let imports = input.queryAst('[body]>[type=VariableDeclaration] [callee.name="require"]');
         return imports.map(a => a.getContents().arguments[0].value);

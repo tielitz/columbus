@@ -1,6 +1,10 @@
 'use strict';
 
-class ReactModelGenerator extends AbstractModelGenerator {
+import {AbstractModelGenerator,ComponentModel,ComponentModelContainer} from './shared-generator';
+import guid from './guid';
+
+
+export class ReactModelGenerator extends AbstractModelGenerator {
     generate(informationBase) {
         console.log('[ReactModelGenerator] started generation process', informationBase);
         let componentModelContainer = new ComponentModelContainer();

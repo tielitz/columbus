@@ -1,0 +1,47 @@
+{
+  "name": "columbus",
+  "version": "1.0.0",
+  "description": "Web Components code analysis and model discovery tool",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrianhdezm/columbus"
+  },
+  "author": "Adrian Hernandez-Mendez <adrian.hernandez@tum.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adrianhdezm/columbus/issues"
+  },
+  "homepage": "https://github.com/adrianhdezm/columbus#readme",
+  "devDependencies": {
+    "babel-core": "^6.11.4",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.9.0",
+    "css-loader": "^0.23.1",
+    "html-loader": "^0.4.3",
+    "html-webpack-plugin": "^2.22.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "http-server": "^0.9.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.1"
+  },
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-animate": "^1.5.8",
+    "angular-aria": "^1.5.8",
+    "angular-material": "^1.1.0",
+    "angular-material-icons": "^0.7.1",
+    "angular-messages": "^1.5.8",
+    "brace": "^0.10.0",
+    "esprima": "^3.1.3",
+    "esquery": "^0.4.0"
+  },
+  "engines": {
+    "node": ">=4.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js",
+    "start": "http-server -a localhost -p 8000 -c-1 ./dist"
+  }
+}

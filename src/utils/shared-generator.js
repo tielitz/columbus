@@ -4,7 +4,7 @@
  * Abstract base class for the model generator
  * Child classes must provide an implementation for the generate method
  */
-class AbstractModelGenerator {
+export default class AbstractModelGenerator {
     /**
      * Creates a framework specific view model of the information provided in the information base
      *
@@ -39,7 +39,7 @@ class AbstractModelGenerator {
  * Builder class for the component model
  * The model generator adds information piece by piece to construct the view model
  */
-class ComponentModel {
+export class ComponentModel {
     constructor(name) {
         this.name = name;
         this.structure = {};
@@ -141,7 +141,7 @@ class ComponentModel {
 /**
  * This class holds multiple ComponentModels under their component name
  */
-class ComponentModelContainer {
+export class ComponentModelContainer {
     constructor() {
         this.models = {};
     }

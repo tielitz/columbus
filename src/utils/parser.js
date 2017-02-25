@@ -1,9 +1,11 @@
 'use strict';
 
+import {Ast,AstHelper, ReactAst, AngularAst, PolymerAst} from './ast';
+
 /**
  * Compiles the source code into a framework specific AST
  */
-class AstParser {
+export default class AstParser {
 
     /**
      * @param  {Esprima} parser Esprima parsing library
@@ -43,7 +45,7 @@ class AstParser {
 /**
  * Tokenises the source code
  */
-class TokenParser {
+export class TokenParser {
 
     /**
      * @param  {Esprima} parser Esprima parsing library
@@ -66,7 +68,7 @@ class TokenParser {
 /**
  * Transforms the source code into EcmaScript 5 syntax
  */
-class BabelParser {
+export class BabelParser {
 
     /**
      * Uses Babel to transform the source code into ECMAScript 5 syntax
@@ -86,7 +88,7 @@ class BabelParser {
 /**
  * Transforms JSX syntax into valid source code
  */
-class JsxParser extends BabelParser {
+export class JsxParser extends BabelParser {
 
     /**
      * Uses Babel to transform the source code into ECMAScript 5 syntax

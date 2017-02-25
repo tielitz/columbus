@@ -1,6 +1,9 @@
 'use strict';
 
-class PolymerModelGenerator extends AbstractModelGenerator {
+import {AbstractModelGenerator,ComponentModel,ComponentModelContainer} from './shared-generator';
+
+
+export default class PolymerModelGenerator extends AbstractModelGenerator {
     generate(informationBase) {
         console.log('[PolymerModelGenerator] started generation process', informationBase);
         let componentModelContainer = new ComponentModelContainer();

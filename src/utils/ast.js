@@ -1,9 +1,11 @@
 'use strict';
 
+import esquery from 'esquery';
+
 /**
  * Base class to hold the abstract syntax tree
  */
-class Ast {
+export default class Ast {
 
     constructor(value) {
         this.value = value;
@@ -54,7 +56,7 @@ class Ast {
 /**
  * AST implementation with react specific functions
  */
-class ReactAst extends Ast {
+export class ReactAst extends Ast {
 
     /**
      * Returns a list of all components found in the AST
@@ -95,7 +97,7 @@ class ReactAst extends Ast {
 /**
  * AST implementation with Polymer specific functions
  */
-class PolymerAst extends Ast {
+export class PolymerAst extends Ast {
 
     /**
      * Returns a list of all components found in the AST
@@ -137,7 +139,7 @@ class PolymerAst extends Ast {
 /**
  * AST implementation with AngularJS specific functions
  */
-class AngularAst extends Ast {
+export class AngularAst extends Ast {
 
     /**
      * Returns a list of all components found in the AST
@@ -165,7 +167,7 @@ class AngularAst extends Ast {
 /**
  * Utility class to perform actions on an AST structure
  */
-class AstHelper {
+export class AstHelper {
 
     /**
      * Extracts the expression found in a subtree

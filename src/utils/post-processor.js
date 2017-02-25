@@ -1,10 +1,14 @@
-class AbstractPostProcessor {
+'use strict';
+
+import guid from './guid';
+
+export default class AbstractPostProcessor {
     static process(ast) {
         throw new Error('Method not implemented');
     }
 }
 
-class JsxUniqueIdPostProcessor extends AbstractPostProcessor {
+export class JsxUniqueIdPostProcessor extends AbstractPostProcessor {
 
     /**
      * Adds a generated id to each arg[0] of any React.createElement function call. The id is necessary to identify
@@ -34,7 +38,7 @@ class JsxUniqueIdPostProcessor extends AbstractPostProcessor {
     }
 }
 
-class ImportDependencyPostProcessor extends AbstractPostProcessor {
+export class ImportDependencyPostProcessor extends AbstractPostProcessor {
 
     /**
      * Replaces the ugly identifier introdec by babel when using import syntax.

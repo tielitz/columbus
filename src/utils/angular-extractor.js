@@ -1,6 +1,9 @@
 'use strict';
 
-class AngularModelExtractorChain extends SharedModelExtractorChain {
+import {SharedModelExtractorChain,AbstractExtractor,AbstractComponentBasedExtractor} from './shared-extractor';
+
+
+export default class AngularModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
         super();
 
@@ -21,7 +24,7 @@ class AngularModelExtractorChain extends SharedModelExtractorChain {
  * Extracts the name of the components
  * Remnant before the method was implemented in the Ast
  */
-class AngularComponentNameExtractor extends AbstractExtractor {
+export class AngularComponentNameExtractor extends AbstractExtractor {
     descriptor() {
         return 'components';
     }
@@ -34,7 +37,7 @@ class AngularComponentNameExtractor extends AbstractExtractor {
 /**
  * Extracts all component bindings
  */
-class AngularComponentBindingsExtractor extends AbstractComponentBasedExtractor {
+export class AngularComponentBindingsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let properties = component.querySingleAst(
             '[type=Property][key.name=bindings] [properties]'
@@ -57,7 +60,7 @@ class AngularComponentBindingsExtractor extends AbstractComponentBasedExtractor 
 /**
  * Extracts dependencies to other components from the require section
  */
-class AngularComponentDependencyExtractor extends AbstractComponentBasedExtractor {
+export class AngularComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let dependencies = component.querySingleAst(
             '[type=Property][key.name=require] [properties]'
@@ -77,7 +80,7 @@ class AngularComponentDependencyExtractor extends AbstractComponentBasedExtracto
 /**
  * Extracts all defined functions in the controller
  */
-class AngularComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+export class AngularComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
 
         // Step 1: try to find the controller function
@@ -112,7 +115,7 @@ class AngularComponentFunctionsExtractor extends AbstractComponentBasedExtractor
  * Extracts all properties of the component that are defined in the controller function with this. and any other object
  * for that matter. Fix me please
  */
-class AngularComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
+export class AngularComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
 
         // Step 1: try to find the controller function

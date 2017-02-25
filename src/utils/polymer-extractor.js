@@ -1,6 +1,8 @@
 'use strict';
 
-class PolymerModelExtractorChain extends SharedModelExtractorChain {
+import {SharedModelExtractorChain, AbstractExtractor, AbstractComponentBasedExtractor} from './shared-extractor';
+
+export default class PolymerModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
         super();
 
@@ -21,7 +23,7 @@ class PolymerModelExtractorChain extends SharedModelExtractorChain {
  * Extracts the name of the components
  * Remnant before the method was implemented in the Ast
  */
-class PolymerComponentNameExtractor extends AbstractExtractor {
+export class PolymerComponentNameExtractor extends AbstractExtractor {
     descriptor() {
         return 'components';
     }
@@ -34,7 +36,7 @@ class PolymerComponentNameExtractor extends AbstractExtractor {
 /**
  * Extracts all properties definitions in the properties section
  */
-class PolymerComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
+export class PolymerComponentPropertiesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let properties = component.queryAst(
             '[type=Property][key.type=Identifier][key.name=properties]>[properties]>[type=Property]'
@@ -59,7 +61,7 @@ class PolymerComponentPropertiesExtractor extends AbstractComponentBasedExtracto
 /**
  * Extracts all function declarations
  */
-class PolymerComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+export class PolymerComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
             '[arguments]>[properties]>[type=Property][value.type=FunctionExpression]'
@@ -79,7 +81,7 @@ class PolymerComponentFunctionsExtractor extends AbstractComponentBasedExtractor
 /**
  * Extracts all listeners declarations inside the listeners section
  */
-class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor {
+export class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let listeners = component.queryAst(
             '[type=Property][key.type=Identifier][key.name=listeners]>[properties]>[type=Property]'
@@ -107,7 +109,7 @@ class PolymerComponentListenersExtractor extends AbstractComponentBasedExtractor
 /**
  * Extracts all events and their methods that are declared using addEventListener
  */
-class PolymerAddEventListenerExtractor extends AbstractComponentBasedExtractor {
+export class PolymerAddEventListenerExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let listeners = component.queryAst('[type=CallExpression][callee.property.name=addEventListener]');
 

@@ -1,6 +1,9 @@
 'use strict';
 
-class ReactModelExtractorChain extends SharedModelExtractorChain {
+import {SharedModelExtractorChain, AbstractExtractor, AbstractComponentBasedExtractor} from './shared-extractor';
+
+
+export default class ReactModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
         super();
 
@@ -28,7 +31,7 @@ class ReactModelExtractorChain extends SharedModelExtractorChain {
  * Extracts the name of the components
  * Remnant before the method was implemented in the Ast
  */
-class ReactComponentNameExtractor extends AbstractExtractor {
+export class ReactComponentNameExtractor extends AbstractExtractor {
     descriptor() {
         return 'components';
     }
@@ -48,7 +51,7 @@ class ReactComponentNameExtractor extends AbstractExtractor {
 /**
  * Extracts the properties defined in the propTypes section of the component
  */
-class ReactComponentProptypesExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentProptypesExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let propTypes = component.queryAst(
             '[key.name="propTypes"] > [properties] > [type]'
@@ -69,7 +72,7 @@ class ReactComponentProptypesExtractor extends AbstractComponentBasedExtractor {
 /**
  * Extracts all properties that have a default value assigned
  */
-class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let defValues = component.queryAst(
             '[type="FunctionExpression"][id.name="getDefaultProps"] [type="ReturnStatement"] [properties] [type="Property"]'
@@ -89,7 +92,7 @@ class ReactComponentDefaultPropsExtractor extends AbstractComponentBasedExtracto
 /**
  * Extracts all state properties which are defined in the getInitialState method
  */
-class ReactComponentInitialStateExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentInitialStateExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let defValues = component.queryAst(
             '[type="FunctionExpression"][id.name="getInitialState"] [type="ReturnStatement"] [properties] [type="Property"]'
@@ -109,7 +112,7 @@ class ReactComponentInitialStateExtractor extends AbstractComponentBasedExtracto
 /**
  * Extracts all declared functions
  */
-class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let funcs = component.queryAst(
             '[arguments] > [properties] > [value.type="FunctionExpression"]'
@@ -129,7 +132,7 @@ class ReactComponentFunctionsExtractor extends AbstractComponentBasedExtractor {
 /**
  * Extracts all dependencies to other components and libraries in the JSX tags
  */
-class ReactComponentDependencyExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentDependencyExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let reactCreateElementTags = component.queryAst(
             '[value.id.name="render"] [type="ReturnStatement"] [arguments] [type="Identifier"]:first-child'
@@ -144,7 +147,7 @@ class ReactComponentDependencyExtractor extends AbstractComponentBasedExtractor 
 /**
  * Extracts all this.props. variable usages in the render statement
  */
-class ReactComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentRenderPropsExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let props = component.queryAst(
             '[key.name="render"] [type="MemberExpression"][object.property.name="props"]'
@@ -162,7 +165,7 @@ class ReactComponentRenderPropsExtractor extends AbstractComponentBasedExtractor
  * Extracts all CSS style properties that are defined in the template
  * This extractor is not used during the model generation
  */
-class ReactComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentRenderStyleExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let styles = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ObjectExpression"] [type="Property"][key.name="style"]'
@@ -189,7 +192,7 @@ class ReactComponentRenderStyleExtractor extends AbstractComponentBasedExtractor
  * Extracts the possible return types of each function
  * This extractor is not used during the model generation
  */
-class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let functions = component.queryAst(
             '[type="FunctionExpression"]'
@@ -236,7 +239,7 @@ class ReactComponentFunctionReturnValueExtractor extends AbstractComponentBasedE
 /**
  * Extracts the template structure of the last return statement in the render function
  */
-class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let renderReturnStatements = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="ReturnStatement"][argument.callee.property.name="createElement"]'
@@ -324,7 +327,7 @@ class ReactComponentRenderHtmlExtractor extends AbstractComponentBasedExtractor 
 /**
  * Extracts all function invocations inside the render statement
  */
-class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor {
+export class ReactComponentRenderBehaviourExtractor extends AbstractComponentBasedExtractor {
     extractFromComponent(component) {
         let callExpressions = component.queryAst(
             '[type="FunctionExpression"][id.name="render"] [type="CallExpression"]'

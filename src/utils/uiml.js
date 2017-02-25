@@ -4,7 +4,7 @@
  * Builder class to construct a single rule for the behaviour part
  * Was meant to simply add events and classes without having to worry about the actual structure
  */
-class BehaviourRuleBuilder {
+export default class BehaviourRuleBuilder {
     constructor() {
         this.reset();
     }
