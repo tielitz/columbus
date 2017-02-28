@@ -2,13 +2,11 @@
 
 import template from './app-footer.template.html';
 
-class AppHeaderComponent {
+class AppFooterComponent {
     constructor(){
         this.template = template;
     }
 
 }
 
-
-
-export default AppHeaderComponent;
+export default AppFooterComponent;
