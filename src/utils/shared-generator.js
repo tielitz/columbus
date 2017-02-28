@@ -4,7 +4,7 @@
  * Abstract base class for the model generator
  * Child classes must provide an implementation for the generate method
  */
-export default class AbstractModelGenerator {
+export class AbstractModelGenerator {
     /**
      * Creates a framework specific view model of the information provided in the information base
      *

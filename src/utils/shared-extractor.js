@@ -3,7 +3,7 @@
 /**
  * Abstract class for the extractor chains.
  */
-export default class SharedModelExtractorChain {
+export class SharedModelExtractorChain {
     constructor() {
         this.extractors = [];
         this.processErrors = [];
