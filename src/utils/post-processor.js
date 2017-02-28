@@ -1,6 +1,7 @@
 'use strict';
 
 import guid from './guid';
+import {ReactAst} from './ast';
 
 export default class AbstractPostProcessor {
     static process(ast) {

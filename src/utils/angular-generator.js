@@ -1,9 +1,9 @@
 'use strict';
 
 import {AbstractModelGenerator,ComponentModel,ComponentModelContainer} from './shared-generator';
+import {BehaviourRuleBuilder} from './uiml';
 
-
-export default class AngularModelGenerator extends AbstractModelGenerator {
+export class AngularModelGenerator extends AbstractModelGenerator {
     generate(informationBase) {
         console.log('[AngularModelGenerator] started generation process', informationBase);
         let componentModelContainer = new ComponentModelContainer();

@@ -1,9 +1,9 @@
 'use strict';
 
 import {SharedModelExtractorChain,AbstractExtractor,AbstractComponentBasedExtractor} from './shared-extractor';
+import {AstHelper} from './ast';
 
-
-export default class AngularModelExtractorChain extends SharedModelExtractorChain {
+export class AngularModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
         super();
 

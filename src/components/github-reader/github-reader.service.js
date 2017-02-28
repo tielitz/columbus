@@ -13,51 +13,51 @@ export default class GithubReaderService {
     getTreeRecursively(owner, repo, sha, directory) {
 
         let url = 'https://api.github.com/repos/'+owner+'/'+repo+'/git/trees/'+sha+'?recursive=1';
-            console.log('[getTreeRecursively]', owner, repo, sha, directory, url);
+        console.log('[getTreeRecursively]', owner, repo, sha, directory, url);
 
-            let deferred = this.$q.defer();
+        let deferred = this.$q.defer();
 
-            this.$http({
-                method: 'GET',
-                url: url,
-                headers: {
-                    'Authorization': 'token 18c2edbf6816fcad281d62ea52a70a11a422ae40'
-                }
-            }).then(function successCallback(response) {
-                //console.log('[getTreeRecursively] successCallback', response);
+        const currentClass = this;
 
-                // Initialise an empty container for the fetched information
-                let githubRepositoryContainer = new GithubRepositoryContainer(response.data);
+        this.$http({
+            method: 'GET',
+            url: url,
+            headers: {
+                'Authorization': 'token 18c2edbf6816fcad281d62ea52a70a11a422ae40'
+            }
+        }).then(function successCallback(response) {
 
-                // filter the content with the regular expression
-                githubRepositoryContainer.applyFilter(directory);
+            // Initialise an empty container for the fetched information
+            let githubRepositoryContainer = new GithubRepositoryContainer(response.data);
 
-                // for all entries still present, fetch their contents
-                let treeEntries =githubRepositoryContainer.getAllEntries();
+            // filter the content with the regular expression
+            githubRepositoryContainer.applyFilter(directory);
 
-                let subDeferreds = [];
+            // for all entries still present, fetch their contents
+            let treeEntries = githubRepositoryContainer.getAllEntries();
 
-                // Each one must be fetched individually
-                for (let i = 0; i < treeEntries.length; i++) {
-                    let entry = treeEntries[i];
-                    subDeferreds.push(fetchSource(owner, repo, sha, entry.path));
-                }
+            let subDeferreds = [];
 
-                $q.all(subDeferreds).then(function (data) {
-                    data.forEach(a => {
-                        // Add file contents to the file in the container
-                        githubRepositoryContainer.addSourceForPath(a.path, a.content);
-                    });
-                    deferred.resolve(githubRepositoryContainer);
+            // Each one must be fetched individually
+            for (let i = 0; i < treeEntries.length; i++) {
+                let entry = treeEntries[i];
+                subDeferreds.push(currentClass.fetchSource(owner, repo, sha, entry.path));
+            }
+
+            currentClass.$q.all(subDeferreds).then(function (data) {
+                data.forEach(a => {
+                    // Add file contents to the file in the container
+                    githubRepositoryContainer.addSourceForPath(a.path, a.content);
                 });
-            }, function errorCallback(response) {
-                // whoops
-                //console.log('[getTreeRecursively] errorCallback', response);
-                deferred.reject();
+                deferred.resolve(githubRepositoryContainer);
             });
+        }, function errorCallback(response) {
+            // whoops
+            deferred.reject();
+        });
 
-            return deferred.promise;
-        }
+        return deferred.promise;
+    }
 
     fetchSource(owner, repo, sha, path) {
         let url = 'https://api.github.com/repos/'+owner+'/'+repo+'/contents/'+path;

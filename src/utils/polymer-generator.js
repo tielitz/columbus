@@ -1,9 +1,9 @@
 'use strict';
 
 import {AbstractModelGenerator,ComponentModel,ComponentModelContainer} from './shared-generator';
+import {BehaviourRuleBuilder} from './uiml';
 
-
-export default class PolymerModelGenerator extends AbstractModelGenerator {
+export class PolymerModelGenerator extends AbstractModelGenerator {
     generate(informationBase) {
         console.log('[PolymerModelGenerator] started generation process', informationBase);
         let componentModelContainer = new ComponentModelContainer();

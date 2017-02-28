@@ -1,9 +1,9 @@
 'use strict';
 
 import {SharedModelExtractorChain, AbstractExtractor, AbstractComponentBasedExtractor} from './shared-extractor';
+import {AstHelper} from './ast';
 
-
-export default class ReactModelExtractorChain extends SharedModelExtractorChain {
+export class ReactModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
         super();
 

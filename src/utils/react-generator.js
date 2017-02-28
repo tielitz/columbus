@@ -2,6 +2,7 @@
 
 import {AbstractModelGenerator,ComponentModel,ComponentModelContainer} from './shared-generator';
 import guid from './guid';
+import {BehaviourRuleBuilder} from './uiml';
 
 
 export class ReactModelGenerator extends AbstractModelGenerator {

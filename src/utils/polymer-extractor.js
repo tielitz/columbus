@@ -1,8 +1,9 @@
 'use strict';
 
 import {SharedModelExtractorChain, AbstractExtractor, AbstractComponentBasedExtractor} from './shared-extractor';
+import {AstHelper} from './ast';
 
-export default class PolymerModelExtractorChain extends SharedModelExtractorChain {
+export class PolymerModelExtractorChain extends SharedModelExtractorChain {
     constructor() {
         super();
 

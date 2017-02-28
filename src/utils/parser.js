@@ -1,11 +1,12 @@
 'use strict';
 
 import {Ast,AstHelper, ReactAst, AngularAst, PolymerAst} from './ast';
+import * as babel from 'babel-standalone';
 
 /**
  * Compiles the source code into a framework specific AST
  */
-export default class AstParser {
+export class AstParser {
 
     /**
      * @param  {Esprima} parser Esprima parsing library
@@ -77,10 +78,9 @@ export class BabelParser {
      * @return {String}      Parsed source code
      */
     transform(code) {
-        let transformed = Babel.transform(code, {
+        let transformed = babel.transform(code, {
             presets: ['es2015']
         });
-        console.log('[Babel] transform ', transformed.code);
         return transformed.code;
     }
 }
@@ -98,10 +98,9 @@ export class JsxParser extends BabelParser {
      * @return {String}      Parsed source code
      */
     transform(code) {
-        let transformed = Babel.transform(code, {
+        let transformed = babel.transform(code, {
             presets: ['es2015', 'react']
         });
-        console.log('[JsxParser] transformed ', transformed.code);
         return transformed.code;
     }
 }

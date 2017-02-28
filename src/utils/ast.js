@@ -5,7 +5,7 @@ import esquery from 'esquery';
 /**
  * Base class to hold the abstract syntax tree
  */
-export default class Ast {
+export class Ast {
 
     constructor(value) {
         this.value = value;
