@@ -4,7 +4,7 @@ import angular from 'angular';
 
 import AppEditorComponent from './app-editor.component';
 
-let appEditor = angular.module('appFooter', []);
+let appEditor = angular.module('appEditor', []);
 
 appEditor
     .component('editor', () => new AppEditorComponent);
