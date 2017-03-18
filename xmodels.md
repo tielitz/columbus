@@ -9,12 +9,12 @@ permalink: /models/
 
 ## Architecture
 
-![Architecture](/assets/columbus-architecture.jpg)
+![Architecture](/columbus/assets/columbus-architecture.jpg)
 
 ## Process
 
-![Process](/assets/columbus-ad-extraction-procees.jpg)
+![Process](/columbus/assets/columbus-ad-extraction-procees.jpg)
 
 ### Sequence Diagram
-![Process](/assets/columbus-sequence-diagram.jpg)
+![Process](/columbus/assets/columbus-sequence-diagram.jpg)
 

@@ -13,12 +13,12 @@ Columbus is a web-based JavaScript application which implements a view model ext
 
 
 
-![Columbus UI](/assets/columbus1.jpg)
-![Columbus UI](/assets/columbus2.jpg)
+![Columbus UI](/columbus/assets/columbus1.jpg)
+![Columbus UI](/columbus/assets/columbus2.jpg)
 
 ## Created Output
 The output of Columbus is a JSON representation of the view model. That model can (manually) be translated into a corresponding object diagram.
-![Columbus Output](/assets/columbus-output1.jpg)
+![Columbus Output](/columbus/assets/columbus-output1.jpg)
 
 Actual output:
 ```json
@@ -272,4 +272,4 @@ Actual output:
 ```
 
 ## Underlying view model
-![View model](/assets/view-model.jpg)
+![View model](/columbus/assets/view-model.jpg)
